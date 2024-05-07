@@ -55,17 +55,25 @@
 
 import Foundation
 
+/// An expression that is globally quantified.
+/// 
+/// These types of expressions apply to all branches extending from the current state.
 public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// The expression must hold on all paths extending from the current state.
     case always(expression: PathQuantifiedExpression)
 
-    public var rawValue: String {
+    /// The equivalent `TCTL` that defines this expression.
+    @inlinable public var rawValue: String {
         switch self {
         case .always(let expression):
             return "A \(expression.rawValue)"
         }
     }
 
+    /// Create the expression from it's `TCTL` representation.
+    /// - Parameter rawValue: The `TCTL` representation of the expression.
+    @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let firstChar = trimmedString.first, firstChar == "A" else {
