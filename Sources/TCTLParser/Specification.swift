@@ -71,14 +71,15 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
     }
 
     public init?(rawValue: String) {
-        let components = rawValue.components(separatedBy: .newlines).map {
+        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let components = trimmedString.components(separatedBy: .newlines).map {
             $0.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         guard !components.isEmpty, components[0].hasPrefix("//") else {
             return nil
         }
         guard let firstIndex = components.firstIndex(where: { !$0.hasPrefix("//") }) else {
-            guard let configuration = Configuration(rawValue: rawValue) else {
+            guard let configuration = Configuration(rawValue: trimmedString) else {
                 return nil
             }
             self.init(configuration: configuration, requirements: [])

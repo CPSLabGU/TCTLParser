@@ -90,4 +90,42 @@ final class SpecificationTests: XCTestCase {
         XCTAssertEqual(expected.rawValue, rawValue)
     }
 
+    /// Test that the `init(rawValue:)` correctly parses the `TCTL` file.
+    func testRawValueInit() {
+        XCTAssertEqual(Specification(rawValue: rawValue), expected)
+        let configurationOnly = "// spec:language VHDL"
+        XCTAssertEqual(
+            Specification(rawValue: configurationOnly),
+            Specification(configuration: Configuration(language: .vhdl), requirements: [])
+        )
+    }
+
+    /// Test that the `init(rawValue:)` detects an invalid specification.
+    func testInvalidRawValue() {
+        XCTAssertNil(Specification(
+            rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+        ))
+        XCTAssertNil(Specification(
+            rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
+        ))
+        XCTAssertNil(Specification(
+            rawValue: "// spec:language VHDLA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+        ))
+        XCTAssertNil(Specification(
+            rawValue: "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+        ))
+        XCTAssertNil(Specification(
+            rawValue: "A G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+        ))
+        XCTAssertNil(Specification(
+            rawValue: "// spec:language none\n\n"
+        ))
+        XCTAssertNil(Specification(
+            rawValue: ""
+        ))
+        XCTAssertNil(Specification(
+            rawValue: "//"
+        ))
+    }
+
 }
