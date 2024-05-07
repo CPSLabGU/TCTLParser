@@ -1,4 +1,4 @@
-// Specification.swift
+// SubExpression.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,57 +53,31 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import Foundation
+public indirect enum SubExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
-public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+    case quantified(expression: GloballyQuantifiedExpression)
 
-    public let configuration: Configuration
-
-    public let requirements: [GloballyQuantifiedExpression]
+    case expression(expression: Expression)
 
     public var rawValue: String {
-        """
-        \(configuration.rawValue)
-
-        \(requirements.map(\.rawValue).joined(separator: "\n\n"))
-
-        """
+        switch self {
+        case .quantified(let expression):
+            return expression.rawValue
+        case .expression(let expression):
+            return expression.rawValue
+        }
     }
 
     public init?(rawValue: String) {
-        let components = rawValue.components(separatedBy: .newlines).map {
-            $0.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        guard !components.isEmpty, components[0].hasPrefix("//") else {
-            return nil
-        }
-        guard let firstIndex = components.firstIndex(where: { !$0.hasPrefix("//") }) else {
-            guard let configuration = Configuration(rawValue: rawValue) else {
-                return nil
-            }
-            self.init(configuration: configuration, requirements: [])
+        if let quantified = GloballyQuantifiedExpression(rawValue: rawValue) {
+            self = .quantified(expression: quantified)
             return
         }
-        let configurationRaw = components[..<firstIndex].joined(separator: "\n")
-        let requirementsRaw = components[firstIndex...].joined(separator: "\n")
-        self.init(configurationRaw: configurationRaw, requirementsRaw: requirementsRaw)
-    }
-
-    init?(configurationRaw: String, requirementsRaw: String) {
-        guard let configuration = Configuration(rawValue: configurationRaw) else {
-            return nil
+        if let expression = Expression(rawValue: rawValue) {
+            self = .expression(expression: expression)
+            return
         }
-        let requirementsComponents = requirementsRaw.components(separatedBy: "\n\n")
-        let requirements = requirementsComponents.compactMap(GloballyQuantifiedExpression.init(rawValue:))
-        guard requirements.count == requirementsComponents.count else {
-            return nil
-        }
-        self.init(configuration: configuration, requirements: requirements)
-    }
-
-    public init(configuration: Configuration, requirements: [GloballyQuantifiedExpression]) {
-        self.configuration = configuration
-        self.requirements = requirements
+        return nil
     }
 
 }

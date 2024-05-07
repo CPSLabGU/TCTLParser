@@ -58,7 +58,7 @@ import VHDLParsing
 
 public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
-    case implies(lhs: Expression, rhs: Requirement)
+    case implies(lhs: Expression, rhs: SubExpression)
 
     case vhdl(expression: ConditionalExpression)
 
@@ -86,7 +86,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         let rhsRaw = trimmedString[trimmedString.index(after: impliesIndex.upperBound)...]
         guard
-            let lhs = Expression(rawValue: String(lhsRaw)), let rhs = Requirement(rawValue: String(rhsRaw))
+            let lhs = Expression(rawValue: String(lhsRaw)), let rhs = SubExpression(rawValue: String(rhsRaw))
         else {
             return nil
         }

@@ -1,4 +1,4 @@
-// Requirement.swift
+// SubExpressionTests.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,31 +53,53 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-public indirect enum Requirement: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+@testable import TCTLParser
+import VHDLParsing
+import XCTest
 
-    case quantified(expression: GloballyQuantifiedExpression)
+/// Tests for the `SubExpression` type.
+final class SubExpressionTests: XCTestCase {
 
-    case expression(expression: Expression)
+    /// The raw value of the test expression.
+    let rawValue = "A G recoveryMode = '1'"
 
-    public var rawValue: String {
-        switch self {
-        case .quantified(let expression):
-            return expression.rawValue
-        case .expression(let expression):
-            return expression.rawValue
-        }
+    /// The raw `VHDL` of `rawValue`.
+    let vhdl = ConditionalExpression.comparison(value: .equality(
+        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+        rhs: .literal(value: .bit(value: .high))
+    ))
+
+    /// A test expression.
+    var expression: GloballyQuantifiedExpression {
+        GloballyQuantifiedExpression.always(expression: .globally(
+            expression: .vhdl(expression: vhdl)
+        ))
     }
 
-    public init?(rawValue: String) {
-        if let quantified = GloballyQuantifiedExpression(rawValue: rawValue) {
-            self = .quantified(expression: quantified)
-            return
-        }
-        if let expression = Expression(rawValue: rawValue) {
-            self = .expression(expression: expression)
-            return
-        }
-        return nil
+    /// Test that the `rawValue` is created correctly.
+    func testRawValue() {
+        XCTAssertEqual(SubExpression.quantified(expression: expression).rawValue, rawValue)
+        XCTAssertEqual(
+            SubExpression.expression(expression: .vhdl(expression: vhdl)).rawValue, "recoveryMode = '1'"
+        )
+    }
+
+    /// Test `init(rawValue:)` parses `TCTL` correctly.
+    func testRawValueInit() {
+        XCTAssertEqual(SubExpression.quantified(expression: expression), SubExpression(rawValue: rawValue))
+        XCTAssertEqual(
+            SubExpression.expression(expression: .vhdl(expression: vhdl)),
+            SubExpression(rawValue: "recoveryMode = '1'")
+        )
+    }
+
+    /// Test `init(rawValue:)` detects invalid `TCTL`.
+    func testInvalidRawValue() {
+        XCTAssertNil(SubExpression(rawValue: "G recoveryMode = '1'"))
+        XCTAssertNil(SubExpression(rawValue: "A recoveryMode = '1'"))
+        XCTAssertNil(SubExpression(rawValue: "A G recoveryMode == '1'"))
+        XCTAssertNil(SubExpression(rawValue: "recoveryMode == '1'"))
+        XCTAssertNil(SubExpression(rawValue: ""))
     }
 
 }
