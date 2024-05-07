@@ -74,4 +74,17 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(vhdl.rawValue, rawValue)
     }
 
+    /// Test that the `init(rawValue:)` parses the expression correctly.
+    func testRawValueInit() {
+        XCTAssertEqual(Expression(rawValue: rawValue), vhdl)
+    }
+
+    /// Test that invalid `rawValue` returns `nil`.
+    func testInvalidRawValue() {
+        XCTAssertNil(TCTLParser.Expression(rawValue: "recoveryMode == '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "recoveryMode = '11'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: ""))
+        XCTAssertNil(TCTLParser.Expression(rawValue: " "))
+    }
+
 }
