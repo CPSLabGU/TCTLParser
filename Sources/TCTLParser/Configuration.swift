@@ -55,14 +55,22 @@
 
 import Foundation
 
+/// A configuration for the `TCTL` expressions within the specification.
 public struct Configuration: RawRepresentable, Equatable, Hashable, Sendable, Codable {
 
+    /// The language embedded within the `TCTL` expressions.
     public let language: Language
 
-    public var rawValue: String {
+    /// An equivalent string that defines that parameters within this configuration. This string is present
+    /// at the top of a specification file.
+    @inlinable public var rawValue: String {
         "// spec:language \(language.rawValue)"
     }
 
+    /// Creates a new configuration from it's string representation.
+    /// - Parameter rawValue: The string defining this configuration. Please note that this string must only
+    /// contain the configuration and no other content.
+    @inlinable
     public init?(rawValue: String) {
         let rawTrimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         let components = rawTrimmed.components(separatedBy: .newlines).map {
@@ -85,6 +93,9 @@ public struct Configuration: RawRepresentable, Equatable, Hashable, Sendable, Co
         self.init(language: language)
     }
 
+    /// Creates a new configuration with the given language.
+    /// - Parameter language: The language within the `TCTL` expression.
+    @inlinable
     public init(language: Language) {
         self.language = language
     }
