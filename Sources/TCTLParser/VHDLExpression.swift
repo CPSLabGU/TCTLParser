@@ -55,13 +55,17 @@
 
 import VHDLParsing
 
+/// An expression containing `VHDL` code.
 public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// A boolean expression.
     case boolean(expression: BooleanExpression)
 
+    /// A conditional expression.
     case conditional(expression: ConditionalExpression)
 
-    public var rawValue: String {
+    /// The equivalent `VHDL` code.
+    @inlinable public var rawValue: String {
         switch self {
         case .boolean(let expression):
             return expression.rawValue
@@ -70,6 +74,9 @@ public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Send
         }
     }
 
+    /// Create this expression from a string of `VHDL` code.
+    /// - Parameter rawValue: The `VHDL` code.
+    @inlinable
     public init?(rawValue: String) {
         if let expression = BooleanExpression(rawValue: rawValue) {
             self = .boolean(expression: expression)
