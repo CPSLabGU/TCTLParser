@@ -59,7 +59,7 @@ import VHDLParsing
 /// A `TCTL` expression.
 /// 
 /// This `enum` represents the foundational `TCTL` expressions that can be `quantified`. Instances of this
-/// type are not valid on their own, but must also be quantified using ``GlobalQuantifiedExpression`` and
+/// type are not valid on their own, but must also be quantified using ``GloballyQuantifiedExpression`` and
 /// ``PathQuantifiedExpression``.
 public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
