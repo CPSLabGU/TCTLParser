@@ -55,13 +55,20 @@
 
 import Foundation
 
+/// A `Specification` is a set of requirements that must hold `true`.
 public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// The configuration of this specification.
+    /// 
+    /// The configuration customises the specification of the `TCTL` formulae. For example, the formulae may
+    /// contains primitives that are expresses using a targetted language, e.g. `VHDL`.
     public let configuration: Configuration
 
+    /// The requirements specified in `TCTL` formulas.
     public let requirements: [GloballyQuantifiedExpression]
 
-    public var rawValue: String {
+    /// The equivalent `String` representation defining this `Specification`.
+    @inlinable public var rawValue: String {
         """
         \(configuration.rawValue)
 
@@ -70,6 +77,9 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
         """
     }
 
+    /// Creates a new `Specification` from it's `rawValue` representation.
+    /// - Parameter rawValue: The `String` representation of the `Specification`.
+    @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         let components = trimmedString.components(separatedBy: .newlines).map {
@@ -90,6 +100,12 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
         self.init(configurationRaw: configurationRaw, requirementsRaw: requirementsRaw)
     }
 
+    /// Creates a new `Specification` from it's string representations of the `configuration` and
+    /// `requirements`.
+    /// - Parameters:
+    ///   - configurationRaw: The `rawValue` of the ``Configuration``.
+    ///   - requirementsRaw: The `rawValue` of all ``GloballyQuantifiedExpression`` requirements.
+    @inlinable
     init?(configurationRaw: String, requirementsRaw: String) {
         guard let configuration = Configuration(rawValue: configurationRaw) else {
             return nil
@@ -102,6 +118,11 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
         self.init(configuration: configuration, requirements: requirements)
     }
 
+    /// Creates a new `Specification` from it's stored properties.
+    /// - Parameters:
+    ///   - configuration: The configuration of this specification.
+    ///   - requirements: The requirements specified in `TCTL` formulas.
+    @inlinable
     public init(configuration: Configuration, requirements: [GloballyQuantifiedExpression]) {
         self.configuration = configuration
         self.requirements = requirements
