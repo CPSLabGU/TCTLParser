@@ -55,17 +55,27 @@
 
 import Foundation
 
+/// A Path-Qualified Expression.
+///
+/// These expressions applies rules to a specific-path within the `TCTL` branching model.
 public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// The `expression` must apply to all states within the current path.
+    /// 
+    /// The syntax of this expression in `TCTL` is `G <expression>`.
     case globally(expression: Expression)
 
-    public var rawValue: String {
+    /// The equivalent `TCTL` notation for the path-quantified expression.
+    @inlinable public var rawValue: String {
         switch self {
         case .globally(let expression):
             return "G \(expression.rawValue)"
         }
     }
 
+    /// Creates a new path-quantified expression from the given `TCTL` expression.
+    /// - Parameter rawValue: The `TCTL` expression defining this path-quantified expression.
+    @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let firstChar = trimmedString.first, firstChar == "G" else {
