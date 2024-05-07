@@ -60,6 +60,8 @@ import VHDLParsing
 
 extension VariableName {
 
+    static let failureCount = VariableName(rawValue: "failureCount")!
+
     static let recoveryMode = VariableName(rawValue: "recoveryMode")!
 
 }
