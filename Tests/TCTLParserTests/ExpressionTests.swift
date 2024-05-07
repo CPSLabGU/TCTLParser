@@ -70,39 +70,43 @@ final class ExpressionTests: XCTestCase {
     let subExpressionRawValue = "failureCount = 3 -> A G recoveryMode = '1' -> finished = '1'"
 
     /// The equivalent `VHDL` parsed format of `rawValue`.
-    let vhdl = Expression.vhdl(expression: ConditionalExpression.comparison(value: .equality(
+    let vhdl = Expression.vhdl(expression: .conditional(expression: .comparison(value: .equality(
         lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
         rhs: .literal(value: .bit(value: .high))
-    )))
+    ))))
 
     /// The equivalent expression of `impliesRawValue`.
     let impliesExpression = Expression.implies(
-        lhs: .vhdl(expression: .comparison(value: .equality(
+        lhs: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
             lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
             rhs: .literal(value: .integer(value: 3))
-        ))),
-        rhs: .expression(expression: .vhdl(expression: .comparison(value: .equality(
+        )))),
+        rhs: .expression(expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
             lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
             rhs: .literal(value: .bit(value: .high))
-        ))))
+        )))))
     )
 
     /// The equivalent nested expression of `subExpressionRawValue`.
     let subExpression = Expression.implies(
-        lhs: .vhdl(expression: .comparison(value: .equality(
+        lhs: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
             lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
             rhs: .literal(value: .integer(value: 3))
-        ))),
+        )))),
         rhs: .quantified(expression: .always(expression: .globally(
             expression: .implies(
-                lhs: .vhdl(expression: .comparison(value: .equality(
+                lhs: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
                     lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
                     rhs: .literal(value: .bit(value: .high))
-                ))),
-                rhs: .expression(expression: .vhdl(expression: .comparison(value: .equality(
-                    lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
-                    rhs: .literal(value: .bit(value: .high))
-                ))))
+                )))),
+                rhs: .expression(expression: .vhdl(
+                    expression: .conditional(
+                        expression: .comparison(value: .equality(
+                            lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
+                            rhs: .literal(value: .bit(value: .high))
+                        ))
+                    )
+                ))
             )
         )))
     )

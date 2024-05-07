@@ -1,4 +1,4 @@
-// PathQuantifiedExpressionTests.swift
+// VHDLExpression.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,41 +53,33 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
-import XCTest
 
-/// Test class for ``PathQuantifiedExpression``.
-final class PathQuantifiedExpressionTests: XCTestCase {
+public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
-    /// The raw value of the test expression.
-    let rawValue = "G recoveryMode = '1'"
+    case boolean(expression: BooleanExpression)
 
-    /// A test expression.
-    let expression = PathQuantifiedExpression.globally(
-        expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
-            lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
-            rhs: .literal(value: .bit(value: .high))
-        ))))
-    )
+    case conditional(expression: ConditionalExpression)
 
-    /// Test that the `rawValue` is generated correctly.
-    func testRawValue() {
-        XCTAssertEqual(expression.rawValue, rawValue)
+    public var rawValue: String {
+        switch self {
+        case .boolean(let expression):
+            return expression.rawValue
+        case .conditional(let expression):
+            return expression.rawValue
+        }
     }
 
-    /// Test that the `init?(rawValue:)` initializer works correctly.
-    func testRawValueInit() {
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: rawValue), expression)
-    }
-
-    /// Test that the `init(rawValue:)` detects invalid raw values.
-    func testInvalidRawValue() {
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "GrecoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "G recoveryMode == '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "G G recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: ""))
+    public init?(rawValue: String) {
+        if let expression = BooleanExpression(rawValue: rawValue) {
+            self = .boolean(expression: expression)
+            return
+        }
+        if let expression = ConditionalExpression(rawValue: rawValue) {
+            self = .conditional(expression: expression)
+            return
+        }
+        return nil
     }
 
 }

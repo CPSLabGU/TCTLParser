@@ -64,10 +64,10 @@ final class SubExpressionTests: XCTestCase {
     let rawValue = "A G recoveryMode = '1'"
 
     /// The raw `VHDL` of `rawValue`.
-    let vhdl = ConditionalExpression.comparison(value: .equality(
+    let vhdl = VHDLExpression.conditional(expression: .comparison(value: .equality(
         lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
         rhs: .literal(value: .bit(value: .high))
-    ))
+    )))
 
     /// A test expression.
     var expression: GloballyQuantifiedExpression {

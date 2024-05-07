@@ -74,14 +74,20 @@ final class SpecificationTests: XCTestCase {
     let expected = Specification(
         configuration: Configuration(language: .vhdl),
         requirements: [
-            .always(expression: .globally(expression: .vhdl(expression: .comparison(value: .equality(
-                lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
-                rhs: .literal(value: .bit(value: .high))
-            ))))),
-            .always(expression: .globally(expression: .vhdl(expression: .comparison(value: .equality(
-                lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
-                rhs: .literal(value: .integer(value: 3))
-            )))))
+            .always(expression: .globally(expression: .vhdl(expression: .conditional(
+                expression: .comparison(
+                    value: .equality(
+                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        rhs: .literal(value: .bit(value: .high))
+                    )
+                )
+            )))),
+            .always(expression: .globally(expression: .vhdl(expression: .conditional(
+                expression: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                    rhs: .literal(value: .integer(value: 3))
+                ))
+            ))))
         ]
     )
 

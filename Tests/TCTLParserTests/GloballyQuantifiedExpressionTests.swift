@@ -65,10 +65,10 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
 
     /// A test expression.
     let expression = GloballyQuantifiedExpression.always(expression: .globally(
-        expression: .vhdl(expression: ConditionalExpression.comparison(value: .equality(
+        expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
             lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
             rhs: .literal(value: .bit(value: .high))
-        )))
+        ))))
     ))
 
     /// Test that the `rawValue` is generated correctly.

@@ -69,7 +69,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     case implies(lhs: Expression, rhs: SubExpression)
 
     /// A `TCTL` expression that contains a `VHDL` `ConditionalExpression`.
-    case vhdl(expression: ConditionalExpression)
+    case vhdl(expression: VHDLExpression)
 
     /// The equivalent `TCTL` expression as a string.
     @inlinable public var rawValue: String {
@@ -87,7 +87,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let impliesIndex = trimmedString.range(of: "->") else {
-            guard let expression = ConditionalExpression(rawValue: trimmedString) else {
+            guard let expression = VHDLExpression(rawValue: trimmedString) else {
                 return nil
             }
             self = .vhdl(expression: expression)
