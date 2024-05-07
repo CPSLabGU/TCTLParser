@@ -56,13 +56,23 @@
 import Foundation
 import VHDLParsing
 
+/// A `TCTL` expression.
+/// 
+/// This `enum` represents the foundational `TCTL` expressions that can be `quantified`. Instances of this
+/// type are not valid on their own, but must also be quantified using ``GlobalQuantifiedExpression`` and
+/// ``PathQuantifiedExpression``.
 public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// A `TCTL` expression that states that `lhs` implies `rhs`.
+    /// 
+    /// The syntax for this expression is `<lhs> -> <rhs>`.
     case implies(lhs: Expression, rhs: SubExpression)
 
+    /// A `TCTL` expression that contains a `VHDL` `ConditionalExpression`.
     case vhdl(expression: ConditionalExpression)
 
-    public var rawValue: String {
+    /// The equivalent `TCTL` expression as a string.
+    @inlinable public var rawValue: String {
         switch self {
         case .implies(let lhs, let rhs):
             return "\(lhs.rawValue) -> \(rhs.rawValue)"
@@ -71,6 +81,9 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
     }
 
+    /// Create the expression from the `TCTL` expression as a string.
+    /// - Parameter rawValue: The `TCTL` expression as a string.
+    @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let impliesIndex = trimmedString.range(of: "->") else {
