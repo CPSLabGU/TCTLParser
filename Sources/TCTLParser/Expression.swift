@@ -67,7 +67,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// The syntax for this expression is `<lhs> -> <rhs>`.
     case implies(lhs: Expression, rhs: SubExpression)
 
-    /// A `TCTL` expression that contains a `VHDL` `ConditionalExpression`.
+    /// A `TCTL` expression that contains `VHDL` code.
     case vhdl(expression: VHDLExpression)
 
     /// The equivalent `TCTL` expression as a string.
