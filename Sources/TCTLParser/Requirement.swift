@@ -69,7 +69,15 @@ public indirect enum Requirement: RawRepresentable, Equatable, Hashable, Codable
     }
 
     public init?(rawValue: String) {
-        nil
+        if let quantified = GloballyQuantifiedExpression(rawValue: rawValue) {
+            self = .quantified(expression: quantified)
+            return
+        }
+        if let expression = Expression(rawValue: rawValue) {
+            self = .expression(expression: expression)
+            return
+        }
+        return nil
     }
 
 }

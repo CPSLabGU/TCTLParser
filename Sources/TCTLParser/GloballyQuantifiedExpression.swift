@@ -53,6 +53,8 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
+
 public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
     case always(expression: PathQuantifiedExpression)
@@ -65,7 +67,22 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
     }
 
     public init?(rawValue: String) {
-        nil
+        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let firstChar = trimmedString.first, firstChar == "A" else {
+            return nil
+        }
+        let remaining = String(trimmedString.dropFirst(1))
+        guard
+            let secondChar = remaining.first,
+            let scalar = secondChar.unicodeScalars.first,
+            CharacterSet.whitespacesAndNewlines.contains(scalar)
+        else {
+            return nil
+        }
+        guard let expression = PathQuantifiedExpression(rawValue: remaining) else {
+            return nil
+        }
+        self = .always(expression: expression)
     }
 
 }

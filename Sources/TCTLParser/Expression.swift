@@ -53,6 +53,7 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
 import VHDLParsing
 
 public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
@@ -71,7 +72,25 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     }
 
     public init?(rawValue: String) {
-        nil
+        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let impliesIndex = trimmedString.range(of: "->") else {
+            guard let expression = ConditionalExpression(rawValue: trimmedString) else {
+                return nil
+            }
+            self = .vhdl(expression: expression)
+            return
+        }
+        let lhsRaw = trimmedString[..<impliesIndex.lowerBound]
+        guard impliesIndex.upperBound < trimmedString.index(before: trimmedString.endIndex) else {
+            return nil
+        }
+        let rhsRaw = trimmedString[trimmedString.index(after: impliesIndex.upperBound)...]
+        guard
+            let lhs = Expression(rawValue: String(lhsRaw)), let rhs = Requirement(rawValue: String(rhsRaw))
+        else {
+            return nil
+        }
+        self = .implies(lhs: lhs, rhs: rhs)
     }
 
 }
