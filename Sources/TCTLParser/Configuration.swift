@@ -1,4 +1,4 @@
-// Specification.swift
+// Configuration.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -55,55 +55,38 @@
 
 import Foundation
 
-public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+public struct Configuration: RawRepresentable, Equatable, Hashable, Sendable, Codable {
 
-    public let configuration: Configuration
-
-    public let requirements: [Requirement]
+    public let language: Language
 
     public var rawValue: String {
-        """
-        \(configuration.rawValue)
-
-        \(requirements.map(\.rawValue).joined(separator: "\n\n"))
-
-        """
+        "// spec:language \(language.rawValue)"
     }
 
     public init?(rawValue: String) {
-        let components = rawValue.components(separatedBy: .newlines).map {
+        let rawTrimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let components = rawTrimmed.components(separatedBy: .newlines).map {
             $0.trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        guard !components.isEmpty, components[0].hasPrefix("//") else {
+        guard components.allSatisfy({ $0.hasPrefix("// spec:") }) else {
             return nil
         }
-        guard let firstIndex = components.firstIndex(where: { !$0.hasPrefix("//") }) else {
-            guard let configuration = Configuration(rawValue: rawValue) else {
+        let languages: [Language] = components.compactMap {
+            let spec = $0.dropFirst(8).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard spec.hasPrefix("language") else {
                 return nil
             }
-            self.init(configuration: configuration, requirements: [])
-            return
+            let withoutLanguage = spec.dropFirst(8).trimmingCharacters(in: .whitespacesAndNewlines)
+            return Language(rawValue: withoutLanguage)
         }
-        let configurationRaw = components[..<firstIndex].joined(separator: "\n")
-        let requirementsRaw = components[firstIndex...].joined(separator: "\n")
-        self.init(configurationRaw: configurationRaw, requirementsRaw: requirementsRaw)
-    }
-
-    init?(configurationRaw: String, requirementsRaw: String) {
-        guard let configuration = Configuration(rawValue: configurationRaw) else {
+        guard languages.count == 1, let language = languages.first else {
             return nil
         }
-        let requirementsComponents = requirementsRaw.components(separatedBy: "\n\n")
-        let requirements = requirementsComponents.compactMap(Requirement.init(rawValue:))
-        guard requirements.count == requirementsComponents.count else {
-            return nil
-        }
-        self.init(configuration: configuration, requirements: requirements)
+        self.init(language: language)
     }
 
-    public init(configuration: Configuration, requirements: [Requirement]) {
-        self.configuration = configuration
-        self.requirements = requirements
+    public init(language: Language) {
+        self.language = language
     }
 
 }

@@ -1,4 +1,4 @@
-// Specification.swift
+// ConfigurationTests.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,57 +53,18 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import Foundation
+@testable import TCTLParser
+import XCTest
 
-public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+/// Test class for ``Configuration``.
+final class ConfigurationTests: XCTestCase {
 
-    public let configuration: Configuration
+    /// A test configuration.
+    let configuration = Configuration(language: .vhdl)
 
-    public let requirements: [Requirement]
-
-    public var rawValue: String {
-        """
-        \(configuration.rawValue)
-
-        \(requirements.map(\.rawValue).joined(separator: "\n\n"))
-
-        """
-    }
-
-    public init?(rawValue: String) {
-        let components = rawValue.components(separatedBy: .newlines).map {
-            $0.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        guard !components.isEmpty, components[0].hasPrefix("//") else {
-            return nil
-        }
-        guard let firstIndex = components.firstIndex(where: { !$0.hasPrefix("//") }) else {
-            guard let configuration = Configuration(rawValue: rawValue) else {
-                return nil
-            }
-            self.init(configuration: configuration, requirements: [])
-            return
-        }
-        let configurationRaw = components[..<firstIndex].joined(separator: "\n")
-        let requirementsRaw = components[firstIndex...].joined(separator: "\n")
-        self.init(configurationRaw: configurationRaw, requirementsRaw: requirementsRaw)
-    }
-
-    init?(configurationRaw: String, requirementsRaw: String) {
-        guard let configuration = Configuration(rawValue: configurationRaw) else {
-            return nil
-        }
-        let requirementsComponents = requirementsRaw.components(separatedBy: "\n\n")
-        let requirements = requirementsComponents.compactMap(Requirement.init(rawValue:))
-        guard requirements.count == requirementsComponents.count else {
-            return nil
-        }
-        self.init(configuration: configuration, requirements: requirements)
-    }
-
-    public init(configuration: Configuration, requirements: [Requirement]) {
-        self.configuration = configuration
-        self.requirements = requirements
+    /// Test that stored properties are initialized correctly.
+    func testPropertyInit() {
+        XCTAssertEqual(configuration.language, .vhdl)
     }
 
 }
