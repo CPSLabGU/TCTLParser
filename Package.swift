@@ -32,7 +32,7 @@ let package = Package(
         ),
         .testTarget(
             name: "TCTLParserTests",
-            dependencies: ["TCTLParser"]
+            dependencies: [.target(name: "TCTLParser"), .product(name: "VHDLParsing", package: "VHDLParsing")]
         )
     ]
 )
