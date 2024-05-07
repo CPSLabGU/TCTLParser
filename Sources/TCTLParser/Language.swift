@@ -53,8 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+/// The supported languages within the `TCTL` specification.
 public enum Language: String, Equatable, Hashable, Codable, Sendable {
 
+    /// `VHDL`.
     case vhdl = "VHDL"
 
 }
