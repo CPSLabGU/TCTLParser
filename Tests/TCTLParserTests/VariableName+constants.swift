@@ -62,6 +62,8 @@ extension VariableName {
 
     static let failureCount = VariableName(rawValue: "failureCount")!
 
+    static let finished = VariableName(rawValue: "finished")!
+
     static let recoveryMode = VariableName(rawValue: "recoveryMode")!
 
 }
