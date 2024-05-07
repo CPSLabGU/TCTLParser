@@ -67,4 +67,26 @@ final class ConfigurationTests: XCTestCase {
         XCTAssertEqual(configuration.language, .vhdl)
     }
 
+    /// Test that the `rawValue` is generated correctly.
+    func testRawValue() {
+        XCTAssertEqual(configuration.rawValue, "// spec:language VHDL")
+    }
+
+    /// Test that `init(rawValue:)` parses the raw value correctly.
+    func testRawValueInit() {
+        let rawValue = "// spec:language VHDL"
+        XCTAssertEqual(Configuration(rawValue: rawValue), configuration)
+    }
+
+    /// Test that `init(rawValue:)` detects invalid raw values.
+    func testInvalidRawValues() {
+        XCTAssertNil(Configuration(rawValue: ""))
+        XCTAssertNil(Configuration(rawValue: "spec:language VHDL"))
+        XCTAssertNil(Configuration(rawValue: "// spec:language swift"))
+        XCTAssertNil(Configuration(rawValue: "// spec:language"))
+        XCTAssertNil(Configuration(rawValue: "// spec:language VHDL\n//"))
+        XCTAssertNil(Configuration(rawValue: "// spec:language VHDL\n// spec:language VHDL"))
+        XCTAssertNil(Configuration(rawValue: "// spec:lang VHDL"))
+    }
+
 }
