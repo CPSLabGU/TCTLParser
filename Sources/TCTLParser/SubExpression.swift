@@ -53,13 +53,18 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+/// A sub-expression is an expression that has already been quantified or a quantified expression that is
+/// nested within another expression.
 public indirect enum SubExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// This sub-expression is also a quantified expression.
     case quantified(expression: GloballyQuantifiedExpression)
 
+    /// This sub-expression is an expression.
     case expression(expression: Expression)
 
-    public var rawValue: String {
+    /// The equivalent `TCTL` code defining this expression.
+    @inlinable public var rawValue: String {
         switch self {
         case .quantified(let expression):
             return expression.rawValue
@@ -68,6 +73,9 @@ public indirect enum SubExpression: RawRepresentable, Equatable, Hashable, Codab
         }
     }
 
+    /// Create the sub-expression from it's `TCTL` representation.
+    /// - Parameter rawValue: The `TCTL` representation of the sub-expression.
+    @inlinable
     public init?(rawValue: String) {
         if let quantified = GloballyQuantifiedExpression(rawValue: rawValue) {
             self = .quantified(expression: quantified)
