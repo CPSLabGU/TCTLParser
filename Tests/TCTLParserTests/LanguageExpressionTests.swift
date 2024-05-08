@@ -1,4 +1,4 @@
-// LanguageExpression.swift
+// LanguageExpressionTests.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,36 +53,47 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-/// An expression defined in another language.
-public enum LanguageExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+@testable import TCTLParser
+import VHDLParsing
+import XCTest
 
-    /// The expression is valid `VHDL` code.
-    case vhdl(expression: VHDLExpression)
+/// Test class for ``LanguageExpression``.
+final class LanguageExpressionTests: XCTestCase {
 
-    /// The language of the expression.
-    @inlinable public var language: Language {
-        switch self {
-        case .vhdl:
-            return .vhdl
-        }
+    /// The `rawValue` of `vhdl`.
+    let vhdlRawValue = "recoveryMode = '1'"
+
+    /// An expression of `VHDL`.
+    let vhdl = VHDLExpression.conditional(expression: .comparison(value: .equality(
+        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+        rhs: .literal(value: .bit(value: .high))
+    )))
+
+    /// A `VHDL` expression.
+    var vhdlExpression: LanguageExpression {
+        .vhdl(expression: vhdl)
     }
 
-    /// The equivalent language code.
-    @inlinable public var rawValue: String {
-        switch self {
-        case .vhdl(let expression):
-            return expression.rawValue
-        }
+    /// Test that the `rawValue` is generated correctly.
+    func testRawValue() {
+        XCTAssertEqual(vhdlExpression.rawValue, vhdlRawValue)
     }
 
-    /// Creates a new expression from the given code.
-    /// - Parameter rawValue: The code in a supported language.
-    @inlinable
-    public init?(rawValue: String) {
-        guard let expression = VHDLExpression(rawValue: rawValue) else {
-            return nil
-        }
-        self = .vhdl(expression: expression)
+    /// Test the language is derived correctly.
+    func testLanguage() {
+        XCTAssertEqual(vhdlExpression.language, .vhdl)
+    }
+
+    /// Test the `init(rawValue:)` parses the language correctly.
+    func testRawValueInit() {
+        XCTAssertEqual(LanguageExpression(rawValue: vhdlRawValue), vhdlExpression)
+    }
+
+    /// Test the `init(rawValue:)` detects invalid syntax.
+    func testInvalidRawValue() {
+        XCTAssertNil(LanguageExpression(rawValue: ""))
+        XCTAssertNil(LanguageExpression(rawValue: "invalid"))
+        XCTAssertNil(LanguageExpression(rawValue: "x!! = 5"))
     }
 
 }
