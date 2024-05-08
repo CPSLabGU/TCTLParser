@@ -81,10 +81,10 @@ final class ExpressionTests: XCTestCase {
             lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
             rhs: .literal(value: .integer(value: 3))
         )))),
-        rhs: .expression(expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
+        rhs: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
             lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
             rhs: .literal(value: .bit(value: .high))
-        )))))
+        ))))
     )
 
     /// The equivalent nested expression of `subExpressionRawValue`.
@@ -99,14 +99,14 @@ final class ExpressionTests: XCTestCase {
                     lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
                     rhs: .literal(value: .bit(value: .high))
                 )))),
-                rhs: .expression(expression: .vhdl(
+                rhs: .vhdl(
                     expression: .conditional(
                         expression: .comparison(value: .equality(
                             lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
                             rhs: .literal(value: .bit(value: .high))
                         ))
                     )
-                ))
+                )
             )
         )))
     )

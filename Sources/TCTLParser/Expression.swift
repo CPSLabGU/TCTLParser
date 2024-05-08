@@ -65,7 +65,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// A `TCTL` expression that states that `lhs` implies `rhs`.
     /// 
     /// The syntax for this expression is `<lhs> -> <rhs>`.
-    case implies(lhs: Expression, rhs: SubExpression)
+    case implies(lhs: Expression, rhs: Expression)
+
+    /// A `TCTL` expression that is globally quantified.
+    case quantified(expression: GloballyQuantifiedExpression)
 
     /// A `TCTL` expression that contains `VHDL` code.
     case vhdl(expression: VHDLExpression)
@@ -75,6 +78,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         switch self {
         case .implies(let lhs, let rhs):
             return "\(lhs.rawValue) -> \(rhs.rawValue)"
+        case .quantified(let expression):
+            return expression.rawValue
         case .vhdl(let expression):
             return expression.rawValue
         }
@@ -85,6 +90,21 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedString.count >= 2 {
+            let prefixString = trimmedString[
+                trimmedString.startIndex...trimmedString.index(after: trimmedString.startIndex)
+            ].trimmingCharacters(in: .whitespacesAndNewlines)
+            if prefixString.count == 1 {
+                let firstChar = prefixString[prefixString.startIndex]
+                if CharacterSet.globalQuantifiers.contains(character: firstChar) {
+                    guard let quantified = GloballyQuantifiedExpression(rawValue: trimmedString) else {
+                        return nil
+                    }
+                    self = .quantified(expression: quantified)
+                    return
+                }
+            }
+        }
         guard let impliesIndex = trimmedString.range(of: "->") else {
             guard let expression = VHDLExpression(rawValue: trimmedString) else {
                 return nil
@@ -98,7 +118,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         let rhsRaw = trimmedString[trimmedString.index(after: impliesIndex.upperBound)...]
         guard
-            let lhs = Expression(rawValue: String(lhsRaw)), let rhs = SubExpression(rawValue: String(rhsRaw))
+            let lhs = Expression(rawValue: String(lhsRaw)), let rhs = Expression(rawValue: String(rhsRaw))
         else {
             return nil
         }
