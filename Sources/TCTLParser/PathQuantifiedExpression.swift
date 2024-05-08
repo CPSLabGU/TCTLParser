@@ -65,7 +65,8 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     /// The syntax of this expression in `TCTL` is `G <expression>`.
     case globally(expression: Expression)
 
-    public var expression: Expression {
+    /// The ``Expression`` this path quantifier applies too.
+    @inlinable public var expression: Expression {
         switch self {
         case .globally(let expression):
             return expression

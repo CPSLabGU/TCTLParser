@@ -63,13 +63,16 @@ final class PathQuantifiedExpressionTests: XCTestCase {
     /// The raw value of the test expression.
     let rawValue = "G recoveryMode = '1'"
 
+    /// The subexpression within the path quantified test expression.
+    let subExpression = Expression.vhdl(expression: .conditional(expression: .comparison(value: .equality(
+        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+        rhs: .literal(value: .bit(value: .high))
+    ))))
+
     /// A test expression.
-    let expression = PathQuantifiedExpression.globally(
-        expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
-            lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
-            rhs: .literal(value: .bit(value: .high))
-        ))))
-    )
+    var expression: PathQuantifiedExpression {
+        PathQuantifiedExpression.globally(expression: subExpression)
+    }
 
     /// Test that the `rawValue` is generated correctly.
     func testRawValue() {
@@ -88,6 +91,11 @@ final class PathQuantifiedExpressionTests: XCTestCase {
         XCTAssertNil(PathQuantifiedExpression(rawValue: "G recoveryMode == '1'"))
         XCTAssertNil(PathQuantifiedExpression(rawValue: "G G recoveryMode = '1'"))
         XCTAssertNil(PathQuantifiedExpression(rawValue: ""))
+    }
+
+    /// Test `expression` computed property.
+    func testExpression() {
+        XCTAssertEqual(expression.expression, subExpression)
     }
 
 }
