@@ -65,19 +65,61 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     /// The syntax of this expression in `TCTL` is `G <expression>`.
     case globally(expression: Expression)
 
+    /// The `expression` must apply to the immediate next state within the current path.
+    /// 
+    /// The syntax of this expression in `TCTL` is `X <expression>`.
     case next(expression: Expression)
 
+    /// The `expression` must apply to some state within the current path.
+    /// 
+    /// The syntax of this expression in `TCTL` is `F <expression>`.
     case finally(expression: Expression)
 
+    /// The `lhs` expression must hold in the current path until `rhs` holds.
+    /// 
+    /// The syntax of this expression in `TCTL` is `<lhs> U <rhs>`.
     case until(lhs: Expression, rhs: Expression)
 
+    /// The `lhs` expression must hold in the current path until `rhs` holds but without any guarantee that
+    /// `rhs` will ever hold.
+    /// 
+    /// The syntax of this expression in `TCTL` is `<lhs> W <rhs>`.
     case weak(lhs: Expression, rhs: Expression)
 
     /// The ``Expression`` this path quantifier applies too.
+    /// 
+    /// This property is only available for unary quantifiers (i.e. `G`, `X`, `F`). For binary quantifiers
+    /// this property will return `nil`.
     @inlinable public var expression: Expression? {
         switch self {
         case .globally(let expression), .next(let expression), .finally(let expression):
             return expression
+        default:
+            return nil
+        }
+    }
+
+    /// The left-hand side ``Expression`` of the binary quantifier.
+    /// 
+    /// This property is only available for binary quantifiers (i.e. `U`, `W`). For unary quantifiers this
+    /// property will return `nil`.
+    @inlinable public var lhs: Expression? {
+        switch self {
+        case .until(let lhs, _), .weak(let lhs, _):
+            return lhs
+        default:
+            return nil
+        }
+    }
+
+    /// The right-hand side ``Expression`` of the binary quantifier.
+    /// 
+    /// This property is only available for binary quantifiers (i.e. `U`, `W`). For unary quantifiers this
+    /// property will return `nil`.
+    @inlinable public var rhs: Expression? {
+        switch self {
+        case .until(_, let rhs), .weak(_, let rhs):
+            return rhs
         default:
             return nil
         }

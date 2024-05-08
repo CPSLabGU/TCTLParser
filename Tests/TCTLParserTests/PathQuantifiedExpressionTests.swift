@@ -61,7 +61,19 @@ import XCTest
 final class PathQuantifiedExpressionTests: XCTestCase {
 
     /// The raw value of the test expression.
-    let rawValue = "G recoveryMode = '1'"
+    let globalRawValue = "G recoveryMode = '1'"
+
+    /// The raw value of the `nextExpression`.
+    let nextRawValue = "X recoveryMode = '1'"
+
+    /// The raw value of the `finalExpression`.
+    let finalRawValue = "F recoveryMode = '1'"
+
+    /// The `lhs` `rawValue`.
+    let lhsRawValue = "recoveryMode = '1'"
+
+    /// The `rhs` `rawValue`.
+    let rhsRawValue = "failureCount = 3"
 
     /// The subexpression within the path quantified test expression.
     let subExpression = Expression.vhdl(expression: .conditional(expression: .comparison(value: .equality(
@@ -69,19 +81,52 @@ final class PathQuantifiedExpressionTests: XCTestCase {
         rhs: .literal(value: .bit(value: .high))
     ))))
 
-    /// A test expression.
-    var expression: PathQuantifiedExpression {
+    /// The `lhs` operand.
+    var lhs: TCTLParser.Expression { subExpression }
+
+    /// The `rhs` operand.
+    let rhs = TCTLParser.Expression.vhdl(expression: .conditional(expression: .comparison(value: .equality(
+        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+        rhs: .literal(value: .integer(value: 3))
+    ))))
+
+    /// A test global expression.
+    var globalExpression: PathQuantifiedExpression {
         PathQuantifiedExpression.globally(expression: subExpression)
+    }
+
+    /// A test next expression.
+    var nextExpression: PathQuantifiedExpression {
+        .next(expression: subExpression)
+    }
+
+    /// A test finally expression.
+    var finalExpression: PathQuantifiedExpression {
+        .finally(expression: subExpression)
+    }
+
+    /// A test until expression.
+    var untilExpression: PathQuantifiedExpression {
+        .until(lhs: lhs, rhs: rhs)
+    }
+
+    /// A test weak expression.
+    var weakExpression: PathQuantifiedExpression {
+        .weak(lhs: lhs, rhs: rhs)
     }
 
     /// Test that the `rawValue` is generated correctly.
     func testRawValue() {
-        XCTAssertEqual(expression.rawValue, rawValue)
+        XCTAssertEqual(globalExpression.rawValue, globalRawValue)
+        XCTAssertEqual(nextExpression.rawValue, nextRawValue)
+        XCTAssertEqual(finalExpression.rawValue, finalRawValue)
+        XCTAssertEqual(untilExpression.rawValue, "\(lhsRawValue) U \(rhsRawValue)")
+        XCTAssertEqual(weakExpression.rawValue, "\(lhsRawValue) W \(rhsRawValue)")
     }
 
     /// Test that the `init?(rawValue:)` initializer works correctly.
     func testRawValueInit() {
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: rawValue), expression)
+        XCTAssertEqual(PathQuantifiedExpression(rawValue: globalRawValue), globalExpression)
     }
 
     /// Test that the `init(rawValue:)` detects invalid raw values.
@@ -95,7 +140,29 @@ final class PathQuantifiedExpressionTests: XCTestCase {
 
     /// Test `expression` computed property.
     func testExpression() {
-        XCTAssertEqual(expression.expression, subExpression)
+        XCTAssertEqual(globalExpression.expression, subExpression)
+        XCTAssertEqual(nextExpression.expression, subExpression)
+        XCTAssertEqual(finalExpression.expression, subExpression)
+        XCTAssertNil(untilExpression.expression)
+        XCTAssertNil(weakExpression.expression)
+    }
+
+    /// Test `lhs` computed propery.
+    func testLHS() {
+        XCTAssertEqual(untilExpression.lhs, lhs)
+        XCTAssertEqual(weakExpression.lhs, lhs)
+        XCTAssertNil(globalExpression.lhs)
+        XCTAssertNil(nextExpression.lhs)
+        XCTAssertNil(finalExpression.lhs)
+    }
+
+    /// Test `rhs` computed property.
+    func testRHS() {
+        XCTAssertEqual(untilExpression.rhs, rhs)
+        XCTAssertEqual(weakExpression.rhs, rhs)
+        XCTAssertNil(globalExpression.rhs)
+        XCTAssertNil(nextExpression.rhs)
+        XCTAssertNil(finalExpression.rhs)
     }
 
 }
