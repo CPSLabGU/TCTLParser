@@ -102,6 +102,10 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
             // Nested quantified expressions are invalid syntax.
             return nil
         }
+        if case .some(let expr) = expression.lhs, case .quantified = expr {
+            // Nested quantified expressions are invalid syntax.
+            return nil
+        }
         self.init(quantifier: firstChar, expression: expression)
     }
 
