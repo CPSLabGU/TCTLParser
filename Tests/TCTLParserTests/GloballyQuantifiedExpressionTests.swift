@@ -105,6 +105,7 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
         XCTAssertNil(GloballyQuantifiedExpression(rawValue: ""))
         XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G A G recoveryMode = '1'"))
         XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G recoveryMode = '1' U failureCount = 3"))
+        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A A G recoveryMode = '1' U failureCount = 3"))
     }
 
     /// Test `init(quantifier:, expression:)` correctly initializes the globally quantified expression.

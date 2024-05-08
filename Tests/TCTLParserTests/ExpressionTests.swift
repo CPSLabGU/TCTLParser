@@ -151,6 +151,16 @@ final class ExpressionTests: XCTestCase {
                 ))))
             )))
         )
+        XCTAssertEqual(
+            TCTLParser.Expression(rawValue: "A failureCount = 3 U recoveryMode = '1'"),
+            .quantified(expression: .always(expression: .until(
+                lhs: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                    rhs: .literal(value: .integer(value: 3))
+                )))),
+                rhs: vhdl
+            )))
+        )
     }
 
     /// Test that invalid `rawValue` returns `nil`.
