@@ -165,6 +165,12 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
         self = .globally(expression: expression)
     }
 
+    /// Initialise this path-quantified expression from the unary quantifier and the expression the quantifier
+    /// applies too.
+    /// - Parameters:
+    ///   - quantifier: The unary quantifier. 
+    ///   - expression: The expression the quantifier applies too.
+    @inlinable
     public init?(unaryQuantifier quantifier: Character, expression: Expression) {
         switch quantifier {
         case "G":
@@ -178,6 +184,13 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
         }
     }
 
+    /// Initialise this path-quantified expression from the binary quantifier and the expressions the
+    /// quantifier applies too.
+    /// - Parameters:
+    ///   - quantifier: The binary quantifier.
+    ///   - lhs: The left-hand side expression.
+    ///   - rhs: The right-hand side expression.
+    @inlinable
     public init?(binaryQuantifier quantifier: Character, lhs: Expression, rhs: Expression) {
         switch quantifier {
         case "U":

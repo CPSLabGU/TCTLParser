@@ -165,4 +165,32 @@ final class PathQuantifiedExpressionTests: XCTestCase {
         XCTAssertNil(finalExpression.rhs)
     }
 
+    /// Test that unary init.
+    func testUnaryInit() {
+        XCTAssertEqual(
+            PathQuantifiedExpression(unaryQuantifier: "G", expression: subExpression), globalExpression
+        )
+        XCTAssertEqual(
+            PathQuantifiedExpression(unaryQuantifier: "X", expression: subExpression), nextExpression
+        )
+        XCTAssertEqual(
+            PathQuantifiedExpression(unaryQuantifier: "F", expression: subExpression), finalExpression
+        )
+        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "U", expression: subExpression))
+        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "W", expression: subExpression))
+        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "A", expression: subExpression))
+        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "E", expression: subExpression))
+    }
+
+    /// Test the binary init.
+    func testBinaryInit() {
+        XCTAssertEqual(PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs), untilExpression)
+        XCTAssertEqual(PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs), weakExpression)
+        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "G", lhs: lhs, rhs: rhs))
+        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "X", lhs: lhs, rhs: rhs))
+        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "F", lhs: lhs, rhs: rhs))
+        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "A", lhs: lhs, rhs: rhs))
+        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "E", lhs: lhs, rhs: rhs))
+    }
+
 }
