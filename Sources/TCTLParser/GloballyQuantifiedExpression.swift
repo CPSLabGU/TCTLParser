@@ -105,7 +105,7 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
         self.init(quantifier: firstChar, expression: expression)
     }
 
-    /// Create the expression from it's quantifier an path qualified expression.
+    /// Create the expression from it's quantifier and path qualified expression.
     /// - Parameters:
     ///   - quantifier: The quantifier of this expression. This valid values are `A` for always and `E` for
     /// eventually.
