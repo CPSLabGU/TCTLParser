@@ -61,13 +61,22 @@ import Foundation
 public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
     /// The expression must hold on all paths extending from the current state.
+    /// 
+    /// This constraint essentially requires that all paths must satisfy the `expression`.
     case always(expression: PathQuantifiedExpression)
+
+    /// The expression must *eventually* hold on all paths extending from the current state.
+    /// 
+    /// This constraint essentially requires that at least one path must satisfy the `expression`.
+    case eventually(expression: PathQuantifiedExpression)
 
     /// The equivalent `TCTL` that defines this expression.
     @inlinable public var rawValue: String {
         switch self {
         case .always(let expression):
             return "A \(expression.rawValue)"
+        case .eventually(let expression):
+            return "E \(expression.rawValue)"
         }
     }
 
@@ -96,13 +105,18 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
         self.init(quantifier: firstChar, expression: expression)
     }
 
+    /// Create the expression from it's quantifier an path qualified expression.
+    /// - Parameters:
+    ///   - quantifier: The quantifier of this expression. This valid values are `A` for always and `E` for
+    /// eventually.
+    ///   - expression: The expression to globally quantify.
+    @inlinable
     public init?(quantifier: Character, expression: PathQuantifiedExpression) {
         switch quantifier {
         case "A":
             self = .always(expression: expression)
         case "E":
-            // Not yet supported.
-            return nil
+            self = .eventually(expression: expression)
         default:
             return nil
         }
