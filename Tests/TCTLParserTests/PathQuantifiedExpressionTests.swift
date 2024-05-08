@@ -131,6 +131,9 @@ final class PathQuantifiedExpressionTests: XCTestCase {
         XCTAssertEqual(PathQuantifiedExpression(rawValue: finalRawValue), finalExpression)
         XCTAssertEqual(PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)"), untilExpression)
         XCTAssertEqual(PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)"), weakExpression)
+        XCTAssertEqual(
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue)\nU\n\(rhsRawValue)"), untilExpression
+        )
     }
 
     /// Test that the `init(rawValue:)` detects invalid raw values.
@@ -140,6 +143,16 @@ final class PathQuantifiedExpressionTests: XCTestCase {
         XCTAssertNil(PathQuantifiedExpression(rawValue: "G recoveryMode == '1'"))
         XCTAssertNil(PathQuantifiedExpression(rawValue: "G G recoveryMode = '1'"))
         XCTAssertNil(PathQuantifiedExpression(rawValue: ""))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "U"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "W"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1' U"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1' W"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "U recoveryMode = '1'"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "W recoveryMode = '1'"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: " U recoveryMode = '1' "))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1' U "))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "failureCount == 3 U recoveryMode = '1'"))
+        XCTAssertNil(PathQuantifiedExpression(rawValue: "failureCount = 3 U recoveryMode == '1'"))
     }
 
     /// Test `expression` computed property.

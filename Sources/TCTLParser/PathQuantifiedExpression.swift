@@ -169,7 +169,7 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     /// Initialise this path-quantified expression from the unary quantifier and the expression the quantifier
     /// applies too.
     /// - Parameters:
-    ///   - quantifier: The unary quantifier. 
+    ///   - quantifier: The unary quantifier. Valid values are `"G"`, `"X"`, and `"F"`.
     ///   - expression: The expression the quantifier applies too.
     @inlinable
     public init?(unaryQuantifier quantifier: Character, expression: Expression) {
@@ -188,7 +188,7 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     /// Initialise this path-quantified expression from the binary quantifier and the expressions the
     /// quantifier applies too.
     /// - Parameters:
-    ///   - quantifier: The binary quantifier.
+    ///   - quantifier: The binary quantifier. Valid values are `"U"` and `"W"`.
     ///   - lhs: The left-hand side expression.
     ///   - rhs: The right-hand side expression.
     @inlinable
@@ -203,8 +203,24 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
         }
     }
 
-    @usableFromInline init?(binaryQuantified rawValue: String) {
-        let quantifierIndexes = ["U", "W"].compactMap { rawValue.range(of: " \($0) ") }
+    /// Initialise this path-quantified expression from the raw value assuming it is a binary quantified
+    /// expression.
+    /// - Parameter rawValue: A `TCTL` string representing the binary path-quantified expression.
+    @inlinable
+    init?(binaryQuantified rawValue: String) {
+        let quantifierIndexes: [Range<String.Index>] = ["U", "W"].compactMap {
+            guard
+                let range = rawValue.range(of: "\($0)"),
+                range.lowerBound > rawValue.startIndex,
+                range.upperBound < rawValue.endIndex,
+                let charBefore = rawValue[..<range.lowerBound].last,
+                CharacterSet.whitespacesAndNewlines.contains(character: charBefore),
+                CharacterSet.whitespacesAndNewlines.contains(character: rawValue[range.upperBound])
+            else {
+                return nil
+            }
+            return range
+        }
         guard
             let firstQuantifierIndex = quantifierIndexes.min(by: { $0.lowerBound < $1.lowerBound }),
             firstQuantifierIndex.lowerBound > rawValue.startIndex
@@ -212,16 +228,11 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
             return nil
         }
         let firstQuantifier = rawValue[firstQuantifierIndex].trimmingCharacters(in: .whitespacesAndNewlines)
-        guard firstQuantifier.count == 1, let quantifierChar = firstQuantifier.first else {
-            return nil
-        }
+        let quantifierChar = firstQuantifier[firstQuantifier.startIndex]
         let lhsRaw = rawValue[..<firstQuantifierIndex.lowerBound]
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        let bottomIndex = rawValue.index(after: firstQuantifierIndex.upperBound)
-        guard bottomIndex < rawValue.endIndex else {
-            return nil
-        }
-        let rhsRaw = rawValue[bottomIndex...].trimmingCharacters(in: .whitespacesAndNewlines)
+        let rhsRaw = rawValue[firstQuantifierIndex.upperBound...]
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
             return nil
         }
