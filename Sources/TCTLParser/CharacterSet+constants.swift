@@ -59,10 +59,10 @@ import Foundation
 extension CharacterSet {
 
     /// The quantifiers that access all branches.
-    static let globalQuantifiers = CharacterSet(charactersIn: "AE")
+    @usableFromInline static let globalQuantifiers = CharacterSet(charactersIn: "AE")
 
     /// The quantifier that constrain a single branch.
-    static let pathQuantifiers = CharacterSet(charactersIn: "XGFUW")
+    @usableFromInline static let pathQuantifiers = CharacterSet(charactersIn: "XGFUW")
 
     /// Check that a `CharacterSet` contains a given `Character`.
     /// - Parameter character: The character to check.
