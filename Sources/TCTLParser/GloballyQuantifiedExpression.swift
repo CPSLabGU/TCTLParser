@@ -76,21 +76,36 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
     @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let firstChar = trimmedString.first, firstChar == "A" else {
+        guard
+            let firstChar = trimmedString.first, CharacterSet.globalQuantifiers.contains(character: firstChar)
+        else {
             return nil
         }
         let remaining = String(trimmedString.dropFirst(1))
         guard
             let secondChar = remaining.first,
-            let scalar = secondChar.unicodeScalars.first,
-            CharacterSet.whitespacesAndNewlines.contains(scalar)
+            CharacterSet.whitespacesAndNewlines.contains(character: secondChar),
+            let expression = PathQuantifiedExpression(rawValue: remaining)
         else {
             return nil
         }
-        guard let expression = PathQuantifiedExpression(rawValue: remaining) else {
+        if case .quantified = expression.expression {
+            // Nested quantified expressions are invalid syntax.
             return nil
         }
-        self = .always(expression: expression)
+        self.init(quantifier: firstChar, expression: expression)
+    }
+
+    public init?(quantifier: Character, expression: PathQuantifiedExpression) {
+        switch quantifier {
+        case "A":
+            self = .always(expression: expression)
+        case "E":
+            // Not yet supported.
+            return nil
+        default:
+            return nil
+        }
     }
 
 }
