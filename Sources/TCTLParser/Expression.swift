@@ -73,8 +73,11 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// The `TCTL` expression has precedence (paranthesis around the expression).
     case precedence(expression: Expression)
 
-    /// A `TCTL` expression that contains `VHDL` code.
-    case vhdl(expression: VHDLExpression)
+    /// A `TCTL` expression that contains language-specific code.
+    /// 
+    /// - Note: Current supported languages are defined in the ``Language`` enum and ``LanguageExpression``
+    /// enum.
+    case language(expression: LanguageExpression)
 
     /// The equivalent `TCTL` expression as a string.
     @inlinable public var rawValue: String {
@@ -85,7 +88,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return expression.rawValue
         case .precedence(let expression):
             return "(\(expression.rawValue))"
-        case .vhdl(let expression):
+        case .language(let expression):
             return expression.rawValue
         }
     }
@@ -115,10 +118,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return
         }
         guard let impliesIndex = trimmedString.range(of: "->") else {
-            guard let expression = VHDLExpression(rawValue: trimmedString) else {
+            guard let expression = LanguageExpression(rawValue: trimmedString) else {
                 return nil
             }
-            self = .vhdl(expression: expression)
+            self = .language(expression: expression)
             return
         }
         let lhsRaw = trimmedString[..<impliesIndex.lowerBound]
@@ -161,10 +164,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             let remainingStart = rawValue.index(after: String.Index(utf16Offset: lastIndex, in: rawValue))
             let remainingRaw = rawValue[remainingStart...].trimmingCharacters(in: .whitespacesAndNewlines)
             guard remainingRaw.hasPrefix("->") else {
-                guard let vhdl = VHDLExpression(rawValue: rawValue) else {
+                guard let language = LanguageExpression(rawValue: rawValue) else {
                     return nil
                 }
-                self = .vhdl(expression: vhdl)
+                self = .language(expression: language)
                 return
             }
             let lhsRaw = rawValue[...String.Index(utf16Offset: lastIndex, in: rawValue)]
