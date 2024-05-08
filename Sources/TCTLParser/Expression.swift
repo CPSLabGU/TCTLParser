@@ -70,6 +70,9 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// A `TCTL` expression that is globally quantified.
     case quantified(expression: GloballyQuantifiedExpression)
 
+    /// The `TCTL` expression has precedence (paranthesis around the expression).
+    case precedence(expression: Expression)
+
     /// A `TCTL` expression that contains `VHDL` code.
     case vhdl(expression: VHDLExpression)
 
@@ -80,6 +83,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return "\(lhs.rawValue) -> \(rhs.rawValue)"
         case .quantified(let expression):
             return expression.rawValue
+        case .precedence(let expression):
+            return "(\(expression.rawValue))"
         case .vhdl(let expression):
             return expression.rawValue
         }
@@ -105,6 +110,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
                 }
             }
         }
+        if trimmedString.first == "(" {
+            self.init(precedence: trimmedString)
+            return
+        }
         guard let impliesIndex = trimmedString.range(of: "->") else {
             guard let expression = VHDLExpression(rawValue: trimmedString) else {
                 return nil
@@ -124,5 +133,64 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         self = .implies(lhs: lhs, rhs: rhs)
     }
+
+    // swiftlint:disable cyclomatic_complexity
+
+    /// Try and initialise an `Expression` where the first character is an open-bracket.
+    /// - Parameter rawValue: The string containing the precedence.
+    @inlinable
+    init?(precedence rawValue: String) {
+        guard rawValue.first == "(" else {
+            return nil
+        }
+        var currentCount = 0
+        var lastIndex: Int = 0
+        for (i, c) in rawValue.enumerated() {
+            if c == "(" {
+                currentCount += 1
+            } else if c == ")" {
+                currentCount -= 1
+            }
+            if currentCount == 0 {
+                lastIndex = i
+                break
+            }
+        }
+        guard currentCount == 0, lastIndex > 0 else { return nil }
+        guard lastIndex == rawValue.index(before: rawValue.endIndex).utf16Offset(in: rawValue) else {
+            let remainingStart = rawValue.index(after: String.Index(utf16Offset: lastIndex, in: rawValue))
+            let remainingRaw = rawValue[remainingStart...].trimmingCharacters(in: .whitespacesAndNewlines)
+            guard remainingRaw.hasPrefix("->") else {
+                guard let vhdl = VHDLExpression(rawValue: rawValue) else {
+                    return nil
+                }
+                self = .vhdl(expression: vhdl)
+                return
+            }
+            let lhsRaw = rawValue[...String.Index(utf16Offset: lastIndex, in: rawValue)]
+                .dropFirst()
+                .dropLast()
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let rhsRaw = remainingRaw.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
+                return nil
+            }
+            self = .implies(lhs: .precedence(expression: lhs), rhs: rhs)
+            return
+        }
+        let firstIndex = rawValue.index(after: rawValue.startIndex)
+        let finalIndex = rawValue.index(before: String.Index(utf16Offset: lastIndex, in: rawValue))
+        guard finalIndex > firstIndex else {
+            return nil
+        }
+        let subExpressionRaw = String(rawValue[firstIndex...finalIndex])
+        guard let expression = Expression(rawValue: subExpressionRaw) else {
+            return nil
+        }
+        self = .precedence(expression: expression)
+        return
+    }
+
+    // swiftlint:enable cyclomatic_complexity
 
 }

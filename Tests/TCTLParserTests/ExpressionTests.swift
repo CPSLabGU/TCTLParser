@@ -116,6 +116,7 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(vhdl.rawValue, rawValue)
         XCTAssertEqual(impliesExpression.rawValue, impliesRawValue)
         XCTAssertEqual(subExpression.rawValue, subExpressionRawValue)
+        XCTAssertEqual(TCTLParser.Expression.precedence(expression: vhdl).rawValue, "(\(rawValue))")
     }
 
     /// Test that the `init(rawValue:)` parses the expression correctly.
@@ -123,6 +124,33 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(Expression(rawValue: rawValue), vhdl)
         XCTAssertEqual(Expression(rawValue: impliesRawValue), impliesExpression)
         XCTAssertEqual(Expression(rawValue: subExpressionRawValue), subExpression)
+        XCTAssertEqual(Expression(rawValue: "(\(rawValue))"), .precedence(expression: vhdl))
+        XCTAssertEqual(
+            Expression(rawValue: "(\(subExpressionRawValue))"), .precedence(expression: subExpression)
+        )
+        XCTAssertEqual(
+            Expression(rawValue: "(\(impliesRawValue)) -> finished = '1'"),
+            .implies(
+                lhs: .precedence(expression: impliesExpression),
+                rhs: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
+                    rhs: .literal(value: .bit(value: .high))
+                ))))
+            )
+        )
+        XCTAssertEqual(
+            Expression(rawValue: "(failureCount = 3) and (finished = '1')"),
+            .vhdl(expression: .boolean(expression: .and(
+                lhs: .precedence(value: .conditional(condition: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                    rhs: .literal(value: .integer(value: 3))
+                )))),
+                rhs: .precedence(value: .conditional(condition: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
+                    rhs: .literal(value: .bit(value: .high))
+                ))))
+            )))
+        )
     }
 
     /// Test that invalid `rawValue` returns `nil`.
@@ -149,6 +177,14 @@ final class ExpressionTests: XCTestCase {
         XCTAssertNil(
             TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'")
         )
+        XCTAssertNil(TCTLParser.Expression(rawValue: "()"))
+        XCTAssertNil(TCTLParser.Expression(precedence: rawValue))
+        XCTAssertNil(TCTLParser.Expression(rawValue: ")"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "("))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "(invalid!) -> finished = '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "(finished = '1') -> invalid!"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "(finished = '1') and invalid!"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "(invalid!)"))
     }
 
 }
