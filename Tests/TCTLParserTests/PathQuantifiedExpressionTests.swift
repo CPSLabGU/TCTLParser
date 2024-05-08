@@ -127,6 +127,10 @@ final class PathQuantifiedExpressionTests: XCTestCase {
     /// Test that the `init?(rawValue:)` initializer works correctly.
     func testRawValueInit() {
         XCTAssertEqual(PathQuantifiedExpression(rawValue: globalRawValue), globalExpression)
+        XCTAssertEqual(PathQuantifiedExpression(rawValue: nextRawValue), nextExpression)
+        XCTAssertEqual(PathQuantifiedExpression(rawValue: finalRawValue), finalExpression)
+        XCTAssertEqual(PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)"), untilExpression)
+        XCTAssertEqual(PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)"), weakExpression)
     }
 
     /// Test that the `init(rawValue:)` detects invalid raw values.

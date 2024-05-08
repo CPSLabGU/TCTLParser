@@ -157,12 +157,13 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
             let secondChar = remaining.first,
             CharacterSet.whitespacesAndNewlines.contains(character: secondChar)
         else {
-            return nil
+            self.init(binaryQuantified: trimmedString)
+            return
         }
         guard let expression = Expression(rawValue: remaining) else {
             return nil
         }
-        self = .globally(expression: expression)
+        self.init(unaryQuantifier: firstChar, expression: expression)
     }
 
     /// Initialise this path-quantified expression from the unary quantifier and the expression the quantifier
