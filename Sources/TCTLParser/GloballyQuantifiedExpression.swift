@@ -98,7 +98,7 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
         else {
             return nil
         }
-        if case .quantified = expression.expression {
+        if case .some(let expr) = expression.expression, case .quantified = expr {
             // Nested quantified expressions are invalid syntax.
             return nil
         }

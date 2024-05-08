@@ -65,11 +65,21 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     /// The syntax of this expression in `TCTL` is `G <expression>`.
     case globally(expression: Expression)
 
+    case next(expression: Expression)
+
+    case finally(expression: Expression)
+
+    case until(lhs: Expression, rhs: Expression)
+
+    case weak(lhs: Expression, rhs: Expression)
+
     /// The ``Expression`` this path quantifier applies too.
-    @inlinable public var expression: Expression {
+    @inlinable public var expression: Expression? {
         switch self {
-        case .globally(let expression):
+        case .globally(let expression), .next(let expression), .finally(let expression):
             return expression
+        default:
+            return nil
         }
     }
 
@@ -78,6 +88,14 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
         switch self {
         case .globally(let expression):
             return "G \(expression.rawValue)"
+        case .next(let expression):
+            return "X \(expression.rawValue)"
+        case .finally(let expression):
+            return "F \(expression.rawValue)"
+        case .until(let lhs, let rhs):
+            return "\(lhs.rawValue) U \(rhs.rawValue)"
+        case .weak(let lhs, let rhs):
+            return "\(lhs.rawValue) W \(rhs.rawValue)"
         }
     }
 
@@ -86,14 +104,16 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let firstChar = trimmedString.first, firstChar == "G" else {
-            return nil
+        guard
+            let firstChar = trimmedString.first, CharacterSet.pathQuantifiers.contains(character: firstChar)
+        else {
+            self.init(binaryQuantified: trimmedString)
+            return
         }
         let remaining = String(trimmedString.dropFirst(1))
         guard
             let secondChar = remaining.first,
-            let scalar = secondChar.unicodeScalars.first,
-            CharacterSet.whitespacesAndNewlines.contains(scalar)
+            CharacterSet.whitespacesAndNewlines.contains(character: secondChar)
         else {
             return nil
         }
@@ -101,6 +121,55 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
             return nil
         }
         self = .globally(expression: expression)
+    }
+
+    public init?(unaryQuantifier quantifier: Character, expression: Expression) {
+        switch quantifier {
+        case "G":
+            self = .globally(expression: expression)
+        case "X":
+            self = .next(expression: expression)
+        case "F":
+            self = .finally(expression: expression)
+        default:
+            return nil
+        }
+    }
+
+    public init?(binaryQuantifier quantifier: Character, lhs: Expression, rhs: Expression) {
+        switch quantifier {
+        case "U":
+            self = .until(lhs: lhs, rhs: rhs)
+        case "W":
+            self = .weak(lhs: lhs, rhs: rhs)
+        default:
+            return nil
+        }
+    }
+
+    @usableFromInline init?(binaryQuantified rawValue: String) {
+        let quantifierIndexes = ["U", "W"].compactMap { rawValue.range(of: " \($0) ") }
+        guard
+            let firstQuantifierIndex = quantifierIndexes.min(by: { $0.lowerBound < $1.lowerBound }),
+            firstQuantifierIndex.lowerBound > rawValue.startIndex
+        else {
+            return nil
+        }
+        let firstQuantifier = rawValue[firstQuantifierIndex].trimmingCharacters(in: .whitespacesAndNewlines)
+        guard firstQuantifier.count == 1, let quantifierChar = firstQuantifier.first else {
+            return nil
+        }
+        let lhsRaw = rawValue[..<firstQuantifierIndex.lowerBound]
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let bottomIndex = rawValue.index(after: firstQuantifierIndex.upperBound)
+        guard bottomIndex < rawValue.endIndex else {
+            return nil
+        }
+        let rhsRaw = rawValue[bottomIndex...].trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
+            return nil
+        }
+        self.init(binaryQuantifier: quantifierChar, lhs: lhs, rhs: rhs)
     }
 
 }
