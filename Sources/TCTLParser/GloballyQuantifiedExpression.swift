@@ -70,6 +70,14 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
     /// This constraint essentially requires that at least one path must satisfy the `expression`.
     case eventually(expression: PathQuantifiedExpression)
 
+    /// The ``PathQuantifiedExpression`` that is globally quantified.
+    @inlinable public var expression: PathQuantifiedExpression {
+        switch self {
+        case .always(let expression), .eventually(let expression):
+            return expression
+        }
+    }
+
     /// The equivalent `TCTL` that defines this expression.
     @inlinable public var rawValue: String {
         switch self {

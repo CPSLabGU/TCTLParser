@@ -119,4 +119,10 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
         XCTAssertNil(GloballyQuantifiedExpression(quantifier: "B", expression: pathExpression))
     }
 
+    /// Test `expression` computed property.
+    func testExpression() {
+        XCTAssertEqual(alwaysExpression.expression, pathExpression)
+        XCTAssertEqual(eventuallyExpression.expression, pathExpression)
+    }
+
 }
