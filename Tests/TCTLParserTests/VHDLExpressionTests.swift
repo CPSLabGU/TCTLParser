@@ -81,12 +81,16 @@ final class VHDLExpressionTests: XCTestCase {
     func testRawValue() {
         XCTAssertEqual(boolean.rawValue, booleanRaw)
         XCTAssertEqual(conditional.rawValue, conditionalRaw)
+        XCTAssertEqual(VHDLExpression.literal(value: true).rawValue, "true")
+        XCTAssertEqual(VHDLExpression.literal(value: false).rawValue, "false")
     }
 
     /// Test that `init(rawValue:)` parses the `VHDL` code correctly.
     func testRawValueInit() {
         XCTAssertEqual(VHDLExpression(rawValue: booleanRaw), boolean)
         XCTAssertEqual(VHDLExpression(rawValue: conditionalRaw), conditional)
+        XCTAssertEqual(VHDLExpression(rawValue: "true"), .literal(value: true))
+        XCTAssertEqual(VHDLExpression(rawValue: "false"), .literal(value: false))
     }
 
     /// Test invalid `VHDL` code is detected.
