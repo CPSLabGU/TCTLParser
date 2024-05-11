@@ -64,6 +64,8 @@ extension CharacterSet {
     /// The quantifier that constrain a single branch.
     @usableFromInline static let pathQuantifiers = CharacterSet(charactersIn: "XGFUW")
 
+    @usableFromInline static let binaryLogicalOperators = CharacterSet(charactersIn: "^V")
+
     /// Check that a `CharacterSet` contains a given `Character`.
     /// - Parameter character: The character to check.
     /// - Returns: Whether `character` is within `self`.
