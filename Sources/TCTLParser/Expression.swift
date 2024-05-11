@@ -79,6 +79,9 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// enum.
     case language(expression: LanguageExpression)
 
+    /// A `TCTL` expression that is negated.
+    case not(expression: Expression)
+
     /// The equivalent `TCTL` expression as a string.
     @inlinable public var rawValue: String {
         switch self {
@@ -90,6 +93,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return "(\(expression.rawValue))"
         case .language(let expression):
             return expression.rawValue
+        case .not(let expression):
+            return "!\(expression.rawValue)"
         }
     }
 
@@ -98,6 +103,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedString.hasPrefix("!") else {
+            self.init(not: String(trimmedString.dropFirst()))
+            return
+        }
         if trimmedString.count >= 2 {
             let prefixString = trimmedString[
                 trimmedString.startIndex...trimmedString.index(after: trimmedString.startIndex)
@@ -192,6 +201,21 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         self = .precedence(expression: expression)
         return
+    }
+
+    /// Try and initialise an `Expression` where the first character is a `!`.
+    /// - Parameter rawValue: The expression the `not` is applied to.
+    @inlinable
+    init?(not rawValue: String) {
+        guard let expression = Expression(rawValue: rawValue) else {
+            return nil
+        }
+        switch expression {
+        case .language:
+            return nil
+        default:
+            self = .not(expression: expression)
+        }
     }
 
     // swiftlint:enable cyclomatic_complexity

@@ -117,6 +117,7 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(impliesExpression.rawValue, impliesRawValue)
         XCTAssertEqual(subExpression.rawValue, subExpressionRawValue)
         XCTAssertEqual(TCTLParser.Expression.precedence(expression: vhdl).rawValue, "(\(rawValue))")
+        XCTAssertEqual(TCTLParser.Expression.not(expression: vhdl).rawValue, "!\(rawValue)")
     }
 
     /// Test that the `init(rawValue:)` parses the expression correctly.
@@ -161,6 +162,10 @@ final class ExpressionTests: XCTestCase {
                 rhs: vhdl
             )))
         )
+        XCTAssertEqual(
+            TCTLParser.Expression(rawValue: "!(recoveryMode = '1')"),
+            .not(expression: .precedence(expression: vhdl))
+        )
     }
 
     /// Test that invalid `rawValue` returns `nil`.
@@ -195,6 +200,11 @@ final class ExpressionTests: XCTestCase {
         XCTAssertNil(TCTLParser.Expression(rawValue: "(finished = '1') -> invalid!"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "(finished = '1') and invalid!"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "(invalid!)"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "!"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "(recoveryMode = '1')!"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "!recoveryMode = '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "!not recoveryMode"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "!!"))
     }
 
 }
