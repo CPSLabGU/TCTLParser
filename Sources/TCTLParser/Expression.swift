@@ -108,6 +108,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
+
     /// Create the expression from the `TCTL` expression as a string.
     /// - Parameter rawValue: The `TCTL` expression as a string.
     @inlinable
@@ -160,7 +162,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         self = .implies(lhs: lhs, rhs: rhs)
     }
 
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable function_body_length
 
     /// Try and initialise an `Expression` where the first character is an open-bracket.
     /// - Parameter rawValue: The string containing the precedence.
@@ -223,6 +225,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         return
     }
 
+    // swiftlint:enable function_body_length
+
     /// Try and initialise an `Expression` where the first character is a `!`.
     /// - Parameter rawValue: The expression the `not` is applied to.
     @inlinable
@@ -238,7 +242,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
     }
 
-    @inlinable init?(logical rawValue: String) {
+    /// Try and create an Expression that is a logical operation.
+    /// - Parameter rawValue: The `TCTL` to parse as a string.
+    @inlinable
+    init?(logical rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmedString.count > 4 else {
             return nil
@@ -270,7 +277,14 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         self.init(binaryOperation: String(firstOperation.1), lhs: lhs, rhs: rhs)
     }
 
-    @inlinable init?(binaryOperation operation: String, lhs: Expression, rhs: Expression) {
+    /// Create an `Expression` that is a binary operation.
+    /// - Parameters:
+    ///   - operation: The operation to perform as the raw TCTL symbol of that operation. Valid values are:
+    /// `^`, `V`, `->`.
+    ///   - lhs: The left-hand side operand.
+    ///   - rhs: The right-hand side operand.
+    @inlinable
+    init?(binaryOperation operation: String, lhs: Expression, rhs: Expression) {
         switch operation.trimmingCharacters(in: .whitespacesAndNewlines) {
         case "^":
             self = .conjunction(lhs: lhs, rhs: rhs)

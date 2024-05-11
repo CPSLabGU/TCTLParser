@@ -200,6 +200,21 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(TCTLParser.Expression(rawValue: "(a = '1' ^ b = '1') V c = '1'"), .disjunction(
             lhs: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b))), rhs: f(.c)
         ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V (c = '1')"), .conjunction(
+            lhs: f(.a), rhs: .disjunction(lhs: f(.b), rhs: .precedence(expression: f(.c)))
+        ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "!(a = '1' ^ b = '1') V c = '1'"), .disjunction(
+            lhs: .not(expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))), rhs: f(.c)
+        ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V !(c = '1')"), .conjunction(
+            lhs: f(.a), rhs: .disjunction(lhs: f(.b), rhs: .not(expression: .precedence(expression: f(.c))))
+        ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "!(a = '1') ^ b = '1' V c = '1'"), .conjunction(
+            lhs: .not(expression: .precedence(expression: f(.a))), rhs: .disjunction(lhs: f(.b), rhs: f(.c))
+        ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "a = '1' ^ !(b = '1') V c = '1'"), .conjunction(
+            lhs: f(.a), rhs: .disjunction(lhs: .not(expression: .precedence(expression: f(.b))), rhs: f(.c))
+        ))
     }
 
     /// Test that invalid `rawValue` returns `nil`.
@@ -239,6 +254,34 @@ final class ExpressionTests: XCTestCase {
         XCTAssertNil(TCTLParser.Expression(rawValue: "!recoveryMode = '1'"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "!not recoveryMode"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "!!"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "^"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "V"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "^ b = '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' ^"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "V b = '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' V"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "a == '1' ^ b = '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "a == '1' V b = '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' ^ b == '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' V b == '1'"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "(a = '1') => b == '1'"))
+    }
+
+    /// Test init(binaryOperation:,lhs:,rhs:).
+    func testBinaryOperationInit() {
+        XCTAssertEqual(
+            TCTLParser.Expression(binaryOperation: "^", lhs: vhdl, rhs: impliesExpression),
+            .conjunction(lhs: vhdl, rhs: impliesExpression)
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression(binaryOperation: "V", lhs: vhdl, rhs: impliesExpression),
+            .disjunction(lhs: vhdl, rhs: impliesExpression)
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression(binaryOperation: "->", lhs: vhdl, rhs: impliesExpression),
+            .implies(lhs: vhdl, rhs: impliesExpression)
+        )
+        XCTAssertNil(TCTLParser.Expression(binaryOperation: "v", lhs: vhdl, rhs: impliesExpression))
     }
 
 }
