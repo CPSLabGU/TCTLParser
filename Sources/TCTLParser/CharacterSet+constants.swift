@@ -64,6 +64,7 @@ extension CharacterSet {
     /// The quantifier that constrain a single branch.
     @usableFromInline static let pathQuantifiers = CharacterSet(charactersIn: "XGFUW")
 
+    /// The valid binary logical operators (^, V).
     @usableFromInline static let binaryLogicalOperators = CharacterSet(charactersIn: "^V")
 
     /// Check that a `CharacterSet` contains a given `Character`.
