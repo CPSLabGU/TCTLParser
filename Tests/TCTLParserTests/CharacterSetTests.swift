@@ -70,6 +70,7 @@ final class CharacterSetTests: XCTestCase {
     func testContains() {
         XCTAssertTrue(CharacterSet.pathQuantifiers.contains(character: "X"))
         XCTAssertFalse(CharacterSet.pathQuantifiers.contains(character: "A"))
+        XCTAssertFalse(CharacterSet.pathQuantifiers.contains(character: "x"))
     }
 
 }

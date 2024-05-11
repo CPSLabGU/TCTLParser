@@ -60,6 +60,12 @@ import VHDLParsing
 
 extension VariableName {
 
+    static let a = VariableName(rawValue: "a")!
+
+    static let b = VariableName(rawValue: "b")!
+
+    static let c = VariableName(rawValue: "c")!
+
     static let failureCount = VariableName(rawValue: "failureCount")!
 
     static let finished = VariableName(rawValue: "finished")!

@@ -118,6 +118,14 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(subExpression.rawValue, subExpressionRawValue)
         XCTAssertEqual(TCTLParser.Expression.precedence(expression: vhdl).rawValue, "(\(rawValue))")
         XCTAssertEqual(TCTLParser.Expression.not(expression: vhdl).rawValue, "!\(rawValue)")
+        XCTAssertEqual(
+            TCTLParser.Expression.conjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
+            "\(rawValue) ^ \(impliesRawValue)"
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression.disjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
+            "\(rawValue) V \(impliesRawValue)"
+        )
     }
 
     /// Test that the `init(rawValue:)` parses the expression correctly.
@@ -166,6 +174,32 @@ final class ExpressionTests: XCTestCase {
             TCTLParser.Expression(rawValue: "!(recoveryMode = '1')"),
             .not(expression: .precedence(expression: vhdl))
         )
+    }
+
+    /// Test `init(rawValue:)` for logic operations.
+    func testLogicalRawValueInit() {
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "\(rawValue) ^ \(impliesRawValue)"), .conjunction(
+            lhs: vhdl,
+            rhs: impliesExpression
+        ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "\(rawValue) V \(impliesRawValue)"), .disjunction(
+            lhs: vhdl,
+            rhs: impliesExpression
+        ))
+        let f: (VariableName) -> TCTLParser.Expression = {
+            TCTLParser.Expression.language(expression: .vhdl(expression: .conditional(
+                expression: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: $0))),
+                    rhs: .literal(value: .bit(value: .high))
+                ))
+            )))
+        }
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V c = '1'"), .conjunction(
+            lhs: f(.a), rhs: .disjunction(lhs: f(.b), rhs: f(.c))
+        ))
+        XCTAssertEqual(TCTLParser.Expression(rawValue: "(a = '1' ^ b = '1') V c = '1'"), .disjunction(
+            lhs: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b))), rhs: f(.c)
+        ))
     }
 
     /// Test that invalid `rawValue` returns `nil`.

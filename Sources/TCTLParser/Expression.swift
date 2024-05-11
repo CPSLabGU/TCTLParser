@@ -82,6 +82,12 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// A `TCTL` expression that is negated.
     case not(expression: Expression)
 
+    /// A `TCTL` conjunction between two expressions.
+    case conjunction(lhs: Expression, rhs: Expression)
+
+    /// A `TCTL` disjunction between two expressions.
+    case disjunction(lhs: Expression, rhs: Expression)
+
     /// The equivalent `TCTL` expression as a string.
     @inlinable public var rawValue: String {
         switch self {
@@ -95,6 +101,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return expression.rawValue
         case .not(let expression):
             return "!\(expression.rawValue)"
+        case .conjunction(let lhs, let rhs):
+            return "\(lhs.rawValue) ^ \(rhs.rawValue)"
+        case .disjunction(let lhs, let rhs):
+            return "\(lhs.rawValue) V \(rhs.rawValue)"
         }
     }
 
@@ -124,6 +134,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         if trimmedString.first == "(" {
             self.init(precedence: trimmedString)
+            return
+        }
+        if let logicalExpression = Expression(logical: trimmedString) {
+            self = logicalExpression
             return
         }
         guard let impliesIndex = trimmedString.range(of: "->") else {
@@ -172,7 +186,11 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         guard lastIndex == rawValue.index(before: rawValue.endIndex).utf16Offset(in: rawValue) else {
             let remainingStart = rawValue.index(after: String.Index(utf16Offset: lastIndex, in: rawValue))
             let remainingRaw = rawValue[remainingStart...].trimmingCharacters(in: .whitespacesAndNewlines)
-            guard remainingRaw.hasPrefix("->") else {
+            guard
+                remainingRaw.count > 2,
+                let first = remainingRaw.first,
+                remainingRaw.hasPrefix("->") || CharacterSet.binaryLogicalOperators.contains(character: first)
+            else {
                 guard let language = LanguageExpression(rawValue: rawValue) else {
                     return nil
                 }
@@ -183,11 +201,13 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
                 .dropFirst()
                 .dropLast()
                 .trimmingCharacters(in: .whitespacesAndNewlines)
+            let operand = remainingRaw[...remainingRaw.index(after: remainingRaw.startIndex)]
+                .trimmingCharacters(in: .whitespacesAndNewlines)
             let rhsRaw = remainingRaw.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)
             guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
                 return nil
             }
-            self = .implies(lhs: .precedence(expression: lhs), rhs: rhs)
+            self.init(binaryOperation: operand, lhs: .precedence(expression: lhs), rhs: rhs)
             return
         }
         let firstIndex = rawValue.index(after: rawValue.startIndex)
@@ -215,6 +235,51 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return nil
         default:
             self = .not(expression: expression)
+        }
+    }
+
+    @inlinable init?(logical rawValue: String) {
+        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedString.count > 4 else {
+            return nil
+        }
+        guard let firstOperation = trimmedString.enumerated().first(where: { index, character in
+            guard
+                index > trimmedString.startIndex.utf16Offset(in: trimmedString),
+                index < trimmedString.index(before: trimmedString.endIndex).utf16Offset(in: trimmedString)
+            else {
+                return false
+            }
+            let before = trimmedString[trimmedString.index(trimmedString.startIndex, offsetBy: index - 1)]
+            let after = trimmedString[trimmedString.index(trimmedString.startIndex, offsetBy: index + 1)]
+            return CharacterSet.whitespacesAndNewlines.contains(character: before) &&
+                CharacterSet.whitespacesAndNewlines.contains(character: after) &&
+                character == "^" || character == "V"
+        }) else {
+            return nil
+        }
+        let lhsRaw = trimmedString[
+            ..<(trimmedString.index(trimmedString.startIndex, offsetBy: firstOperation.0))
+        ].trimmingCharacters(in: .whitespacesAndNewlines)
+        let rhsRaw = trimmedString[
+            trimmedString.index(trimmedString.startIndex, offsetBy: firstOperation.0 + 1)...
+        ].trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
+            return nil
+        }
+        self.init(binaryOperation: String(firstOperation.1), lhs: lhs, rhs: rhs)
+    }
+
+    @inlinable init?(binaryOperation operation: String, lhs: Expression, rhs: Expression) {
+        switch operation.trimmingCharacters(in: .whitespacesAndNewlines) {
+        case "^":
+            self = .conjunction(lhs: lhs, rhs: rhs)
+        case "V":
+            self = .disjunction(lhs: lhs, rhs: rhs)
+        case "->":
+            self = .implies(lhs: lhs, rhs: rhs)
+        default:
+            return nil
         }
     }
 
