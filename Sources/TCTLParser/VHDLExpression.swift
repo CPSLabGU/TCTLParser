@@ -64,9 +64,6 @@ public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Send
     /// A conditional expression.
     case conditional(expression: ConditionalExpression)
 
-    /// A literal boolean value as true or false.
-    case literal(value: Bool)
-
     /// The equivalent `VHDL` code.
     @inlinable public var rawValue: String {
         switch self {
@@ -74,8 +71,6 @@ public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Send
             return expression.rawValue
         case .conditional(let expression):
             return expression.rawValue
-        case .literal(let value):
-            return value ? "true" : "false"
         }
     }
 
@@ -84,12 +79,6 @@ public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Send
     @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmedString.lowercased() == "true" {
-            self = .literal(value: true)
-        }
-        if trimmedString.lowercased() == "false"{
-            self = .literal(value: false)
-        }
         if let expression = BooleanExpression(rawValue: trimmedString) {
             self = .boolean(expression: expression)
             return
