@@ -53,18 +53,28 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+/// A unit of an energy value using `SI` units.
 public enum EnergyUnit: String, Equatable, Hashable, Codable, Sendable, CaseIterable {
 
+    /// femtojoules
     case fJ
 
+    /// picojoules
     case pJ
 
+    /// nanojoules
     case nJ
 
+    /// microjoules
     case uJ
 
+    /// millijoules
     case mJ
 
+    // swiftlint:disable identifier_name
+    /// Joules
     case J
+
+    // swiftlint:enable identifier_name
 
 }

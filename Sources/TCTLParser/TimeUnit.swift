@@ -53,18 +53,25 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+/// A unit of a time value using `SI` units.
 public enum TimeUnit: String, Equatable, Hashable, Codable, Sendable, CaseIterable {
 
+    /// femtoseconds
     case fs
 
+    /// picoseconds
     case ps
 
+    /// nanoseconds
     case ns
 
+    /// microseconds
     case us
 
+    /// milliseconds
     case ms
 
+    /// seconds
     case s
 
 }
