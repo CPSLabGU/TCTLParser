@@ -53,16 +53,32 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+/// An ``Expression`` with physical constraints applied to it.
+/// 
+/// A `ConstrainedExpression` is an ``Expression`` that is restricted by physical constraints. For example,
+/// an expression may be constrained to execute within 100 nanoseconds, or without expending more than
+/// 200 millijoules of energy. This structure allows the creation of such `ConstrainedExpressions`.
 public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// The ``Expression`` to constrain.
     public let expression: Expression
 
+    /// The constraints to apply to this expression. This array cannot be empty.
     public let constraints: [ConstrainedStatement]
 
-    public var rawValue: String {
+    /// The equivalent `TCTL` string that defines the constrained expression.
+    /// 
+    /// The expression is surrounded in curly braces, with the constraints following an underscore and a
+    /// comma-separated list also surrounded in curly braces. The full constrained expression is then
+    /// `{expression}_{constraint1, constraint2, ...}`.
+    @inlinable public var rawValue: String {
         "{\(expression.rawValue)}_{\(constraints.map(\.rawValue).joined(separator: ", "))}"
     }
 
+    /// Create the constrained expression from it's `TCTL` representation.
+    /// - Parameter rawValue: A string representing the `TCTL` expression definining the
+    /// `ConstrainedExpression`.
+    @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmedString.hasPrefix("{") else {
@@ -72,7 +88,7 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
         var terminatingIndex = 0
         var bracketCount = 1
         for (index, character) in remaining.enumerated() {
-            if character == "{" {
+            guard character != "{" else {
                 bracketCount += 1
                 continue
             }
@@ -88,29 +104,40 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
             return nil
         }
         let expressionRaw = remaining[..<remaining.index(remaining.startIndex, offsetBy: terminatingIndex)]
-        guard let expression = Expression(rawValue: String(expressionRaw)) else {
-            return nil
-        }
-        guard remaining.count > terminatingIndex + 1 else {
+        guard
+            let expression = Expression(rawValue: String(expressionRaw)),
+            remaining.count > terminatingIndex + 1
+        else {
             return nil
         }
         let constraintsSection = remaining[
             remaining.index(remaining.startIndex, offsetBy: terminatingIndex + 1)...
         ]
-        guard constraintsSection.hasPrefix("_{"), constraintsSection.hasSuffix("}") else {
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard constraintsSection.hasPrefix("_"), constraintsSection.hasSuffix("}") else {
             return nil
         }
-        let constraintsRaw = constraintsSection.dropFirst(2).dropLast()
-        let constraintsComponents = constraintsRaw.components(separatedBy: ",")
-        let constraints = constraintsComponents.compactMap {
-            ConstrainedStatement(rawValue: $0)
+        let withoutUnderscore = constraintsSection.dropFirst()
+            .dropLast()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard withoutUnderscore.hasPrefix("{") else {
+            return nil
         }
+        let constraintsRaw = withoutUnderscore.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        let constraintsComponents = constraintsRaw.components(separatedBy: ",")
+        let constraints = constraintsComponents.compactMap { ConstrainedStatement(rawValue: $0) }
         guard constraints.count == constraintsComponents.count, !constraints.isEmpty else {
             return nil
         }
         self.init(expression: expression, constraints: constraints)
     }
 
+    /// Create the constrained expression from it's stored properties.
+    /// - Parameters:
+    ///   - expression: The expression to constrain.
+    ///   - constraints: A non-empty array of constraints to apply to the `expression`.
+    /// - Warning: An empty array of constraints will cause a fatal error.
+    @inlinable
     public init(expression: Expression, constraints: [ConstrainedStatement]) {
         guard !constraints.isEmpty else {
             fatalError("Constraints cannot be empty!")
