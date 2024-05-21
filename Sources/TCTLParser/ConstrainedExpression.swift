@@ -58,6 +58,7 @@
 /// A `ConstrainedExpression` is an ``Expression`` that is restricted by physical constraints. For example,
 /// an expression may be constrained to execute within 100 nanoseconds, or without expending more than
 /// 200 millijoules of energy. This structure allows the creation of such `ConstrainedExpressions`.
+/// - SeeAlso: ``Expression``, ``ConstrainedStatement``.
 public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
     /// The ``Expression`` to constrain.
