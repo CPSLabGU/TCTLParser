@@ -65,7 +65,7 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
     public let configuration: Configuration
 
     /// The requirements specified in `TCTL` formulas.
-    public let requirements: [GloballyQuantifiedExpression]
+    public let requirements: [Expression]
 
     /// The equivalent `String` representation defining this `Specification`.
     @inlinable public var rawValue: String {
@@ -111,7 +111,7 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
             return nil
         }
         let requirementsComponents = requirementsRaw.components(separatedBy: "\n\n")
-        let requirements = requirementsComponents.compactMap(GloballyQuantifiedExpression.init(rawValue:))
+        let requirements = requirementsComponents.compactMap(Expression.init(rawValue:))
         guard requirements.count == requirementsComponents.count else {
             return nil
         }
@@ -123,7 +123,7 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
     ///   - configuration: The configuration of this specification.
     ///   - requirements: The requirements specified in `TCTL` formulas.
     @inlinable
-    public init(configuration: Configuration, requirements: [GloballyQuantifiedExpression]) {
+    public init(configuration: Configuration, requirements: [Expression]) {
         self.configuration = configuration
         self.requirements = requirements
     }
