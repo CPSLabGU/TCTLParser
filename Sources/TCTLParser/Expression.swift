@@ -198,9 +198,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         guard
             bracketCount == 0,
-            trimmedString.endIndex > trimmedString.index(
-                trimmedString.startIndex, offsetBy: terminationIndex + 2
-            )
+            trimmedString.endIndex.utf16Offset(in: trimmedString) > terminationIndex + 2
         else {
             return nil
         }
