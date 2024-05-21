@@ -363,6 +363,7 @@ final class ExpressionTests: XCTestCase {
         XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> ><>"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ ><>"))
+        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns}, E < 200 mJ}"))
     }
 
 }

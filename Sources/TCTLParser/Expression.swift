@@ -217,41 +217,19 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return nil
         }
         let withoutStart = withoutUnderscore.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
-        var bracketCount2 = 1
-        var terminationIndex2 = 0
-        for (index, character) in withoutStart.enumerated() {
-            guard character != "{" else {
-                bracketCount2 += 1
-                continue
-            }
-            if character == "}" {
-                bracketCount2 -= 1
-                guard bracketCount2 != 0 else {
-                    terminationIndex2 = index
-                    break
-                }
-            }
-        }
-        guard bracketCount2 == 0 else {
+        guard let terminationIndex2 = withoutStart.firstIndex(of: "}") else {
             return nil
         }
-        let secondHalf = "_{" + withoutStart[
-            ...withoutStart.index(withoutStart.startIndex, offsetBy: terminationIndex2)
-        ]
+        let secondHalf = "_{" + withoutStart[...terminationIndex2]
         guard let expression = ConstrainedExpression(rawValue: firstHalf + secondHalf) else {
             return nil
         }
-        guard
-            withoutStart.index(withoutStart.startIndex, offsetBy: terminationIndex2)
-                != withoutStart.index(before: withoutStart.endIndex)
-        else {
+        guard terminationIndex2 != withoutStart.index(before: withoutStart.endIndex) else {
             self = .constrained(expression: expression)
             return
         }
-        let remaining = withoutStart[
-            withoutStart.index(withoutStart.startIndex, offsetBy: terminationIndex2 + 1)...
-        ]
-        .trimmingCharacters(in: .whitespacesAndNewlines)
+        let remaining = withoutStart[withoutStart.index(after: terminationIndex2)...]
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !remaining.hasPrefix("->") else {
             let rhsRaw = remaining.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)
             guard let rhs = Expression(rawValue: rhsRaw) else {
