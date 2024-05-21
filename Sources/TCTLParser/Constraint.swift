@@ -1,4 +1,4 @@
-// VHDLExpression.swift
+// Constraint.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,41 +53,77 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import VHDLParsing
+import Foundation
 
-/// An expression containing `VHDL` code.
-public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+/// A value representing some constraint on a physical quantity.
+/// 
+/// A `Constraint` is a value that constrains some physical quantity. The current supported constraints are
+/// time and energy. Each constraint is represented as a unsigned value with a corresponding unit. For
+/// example, a time constraint might be `5 ms` representing 5 milliseconds.
+/// - SeeAlso: ``TimeUnit``, ``EnergyUnit``.
+public enum Constraint: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
-    /// A boolean expression.
-    case boolean(expression: BooleanExpression)
+    /// A time constraint.
+    case time(amount: UInt, unit: TimeUnit)
 
-    /// A conditional expression.
-    case conditional(expression: ConditionalExpression)
+    /// An energy constraint.
+    case energy(amount: UInt, unit: EnergyUnit)
 
-    /// The equivalent `VHDL` code.
-    @inlinable public var rawValue: String {
+    /// The variable symbol representation of the constraint. The symbol of time is `t`, while the symbol of
+    /// energy is `E`.
+    @inlinable public var symbol: String {
         switch self {
-        case .boolean(let expression):
-            return expression.rawValue
-        case .conditional(let expression):
-            return expression.rawValue
+        case .time:
+            return "t"
+        case .energy:
+            return "E"
         }
     }
 
-    /// Create this expression from a string of `VHDL` code.
-    /// - Parameter rawValue: The `VHDL` code.
+    /// The unsigned unitless amount of this constraint.
+    @inlinable public var amount: UInt {
+        switch self {
+        case .time(let amount, _):
+            return amount
+        case .energy(let amount, _):
+            return amount
+        }
+    }
+
+    /// The string representation of the unit in this constraint.
+    @inlinable public var unit: String {
+        switch self {
+        case .time(_, let unit):
+            return unit.rawValue
+        case .energy(_, let unit):
+            return unit.rawValue
+        }
+    }
+
+    /// The equivalent string representing the quantity of this constraint together with the `amount` and
+    /// `unit`.
+    @inlinable public var rawValue: String {
+        "\(amount) \(unit)"
+    }
+
+    /// Create a constraint from it's `rawValue` representation.
+    /// - Parameter rawValue: A string representation of the constraint.
     @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let expression = BooleanExpression(rawValue: trimmedString) {
-            self = .boolean(expression: expression)
-            return
+        let components = trimmedString.components(separatedBy: .whitespacesAndNewlines)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        guard components.count == 2, let amount = UInt(components[0]) else {
+            return nil
         }
-        if let expression = ConditionalExpression(rawValue: trimmedString) {
-            self = .conditional(expression: expression)
-            return
+        if let timeUnit = TimeUnit(rawValue: components[1]) {
+            self = .time(amount: amount, unit: timeUnit)
+        } else if let energyUnit = EnergyUnit(rawValue: components[1]) {
+            self = .energy(amount: amount, unit: energyUnit)
+        } else {
+            return nil
         }
-        return nil
     }
 
 }

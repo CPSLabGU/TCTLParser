@@ -1,4 +1,4 @@
-// SpecificationTests.swift
+// ConstraintTests.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -54,84 +54,62 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 @testable import TCTLParser
-import VHDLParsing
 import XCTest
 
-/// Test class for ``Specification``.
-final class SpecificationTests: XCTestCase {
+/// Test class for ``Constraint``.
+final class ConstraintTests: XCTestCase {
 
-    /// The test `rawValue`.
-    let rawValue = """
-    // spec:language VHDL
+    /// A test time constraint.
+    let timeConstraint = Constraint.time(amount: 100, unit: .ns)
 
-    A G recoveryMode = '1'
+    /// A test energy constraint.
+    let energyConstraint = Constraint.energy(amount: 200, unit: .J)
 
-    A G failureCount = 3
+    /// Test the symbol computed property.
+    func testSymbol() {
+        XCTAssertEqual(timeConstraint.symbol, "t")
+        XCTAssertEqual(energyConstraint.symbol, "E")
+    }
 
-    """
+    /// Test that amount computed property.
+    func testAmount() {
+        XCTAssertEqual(timeConstraint.amount, 100)
+        XCTAssertEqual(energyConstraint.amount, 200)
+    }
 
-    /// The expected specification.
-    let expected = Specification(
-        configuration: Configuration(language: .vhdl),
-        requirements: [
-            .quantified(expression: .always(expression: .globally(expression: .vhdl(expression: .conditional(
-                expression: .comparison(
-                    value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
-                        rhs: .literal(value: .bit(value: .high))
-                    )
-                )
-            ))))),
-            .quantified(expression: .always(expression: .globally(expression: .vhdl(expression: .conditional(
-                expression: .comparison(value: .equality(
-                    lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
-                    rhs: .literal(value: .integer(value: 3))
-                ))
-            )))))
-        ]
-    )
+    /// Test the unit computed property.
+    func testUnit() {
+        XCTAssertEqual(timeConstraint.unit, "ns")
+        XCTAssertEqual(energyConstraint.unit, "J")
+    }
 
-    /// Test that the `rawValue` is generated correctly.
+    /// Test the raw value.
     func testRawValue() {
-        XCTAssertEqual(expected.rawValue, rawValue)
+        XCTAssertEqual(timeConstraint.rawValue, "100 ns")
+        XCTAssertEqual(energyConstraint.rawValue, "200 J")
     }
 
-    /// Test that the `init(rawValue:)` correctly parses the `TCTL` file.
+    /// Test that `init(rawValue:)` parses the raw value correctly.
     func testRawValueInit() {
-        XCTAssertEqual(Specification(rawValue: rawValue), expected)
-        let configurationOnly = "// spec:language VHDL"
-        XCTAssertEqual(
-            Specification(rawValue: configurationOnly),
-            Specification(configuration: Configuration(language: .vhdl), requirements: [])
-        )
+        XCTAssertEqual(Constraint(rawValue: "100 ns"), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "200 J"), energyConstraint)
+        XCTAssertEqual(Constraint(rawValue: "100\nns"), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "100    ns"), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "   100    ns  "), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "\n100\nns\n"), timeConstraint)
     }
 
-    /// Test that the `init(rawValue:)` detects an invalid specification.
-    func testInvalidRawValue() {
-        XCTAssertNil(Specification(
-            rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-        ))
-        XCTAssertNil(Specification(
-            rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
-        ))
-        XCTAssertNil(Specification(
-            rawValue: "// spec:language VHDLA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-        ))
-        XCTAssertNil(Specification(
-            rawValue: "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-        ))
-        XCTAssertNil(Specification(
-            rawValue: "A G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-        ))
-        XCTAssertNil(Specification(
-            rawValue: "// spec:language none\n\n"
-        ))
-        XCTAssertNil(Specification(
-            rawValue: ""
-        ))
-        XCTAssertNil(Specification(
-            rawValue: "//"
-        ))
+    /// Test the `init(rawValue:)` detects invalid strings.
+    func testInvalidRawValueInit() {
+        XCTAssertNil(Constraint(rawValue: "100"))
+        XCTAssertNil(Constraint(rawValue: "ns"))
+        XCTAssertNil(Constraint(rawValue: "100 ns J"))
+        XCTAssertNil(Constraint(rawValue: ""))
+        XCTAssertNil(Constraint(rawValue: "100ns"))
+        XCTAssertNil(Constraint(rawValue: "100 ns 1"))
+        XCTAssertNil(Constraint(rawValue: "100"))
+        XCTAssertNil(Constraint(rawValue: "     "))
+        XCTAssertNil(Constraint(rawValue: " "))
     }
 
 }

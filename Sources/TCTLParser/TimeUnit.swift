@@ -1,4 +1,4 @@
-// VHDLExpression.swift
+// TimeUnit.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,41 +53,25 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import VHDLParsing
+/// A unit of a time value using `SI` units.
+public enum TimeUnit: String, Equatable, Hashable, Codable, Sendable, CaseIterable {
 
-/// An expression containing `VHDL` code.
-public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+    /// femtoseconds
+    case fs
 
-    /// A boolean expression.
-    case boolean(expression: BooleanExpression)
+    /// picoseconds
+    case ps
 
-    /// A conditional expression.
-    case conditional(expression: ConditionalExpression)
+    /// nanoseconds
+    case ns
 
-    /// The equivalent `VHDL` code.
-    @inlinable public var rawValue: String {
-        switch self {
-        case .boolean(let expression):
-            return expression.rawValue
-        case .conditional(let expression):
-            return expression.rawValue
-        }
-    }
+    /// microseconds
+    case us
 
-    /// Create this expression from a string of `VHDL` code.
-    /// - Parameter rawValue: The `VHDL` code.
-    @inlinable
-    public init?(rawValue: String) {
-        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let expression = BooleanExpression(rawValue: trimmedString) {
-            self = .boolean(expression: expression)
-            return
-        }
-        if let expression = ConditionalExpression(rawValue: trimmedString) {
-            self = .conditional(expression: expression)
-            return
-        }
-        return nil
-    }
+    /// milliseconds
+    case ms
+
+    /// seconds
+    case s
 
 }

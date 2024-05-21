@@ -1,4 +1,4 @@
-// VHDLExpression.swift
+// EnergyUnit.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,41 +53,28 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import VHDLParsing
+/// A unit of an energy value using `SI` units.
+public enum EnergyUnit: String, Equatable, Hashable, Codable, Sendable, CaseIterable {
 
-/// An expression containing `VHDL` code.
-public enum VHDLExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+    /// femtojoules
+    case fJ
 
-    /// A boolean expression.
-    case boolean(expression: BooleanExpression)
+    /// picojoules
+    case pJ
 
-    /// A conditional expression.
-    case conditional(expression: ConditionalExpression)
+    /// nanojoules
+    case nJ
 
-    /// The equivalent `VHDL` code.
-    @inlinable public var rawValue: String {
-        switch self {
-        case .boolean(let expression):
-            return expression.rawValue
-        case .conditional(let expression):
-            return expression.rawValue
-        }
-    }
+    /// microjoules
+    case uJ
 
-    /// Create this expression from a string of `VHDL` code.
-    /// - Parameter rawValue: The `VHDL` code.
-    @inlinable
-    public init?(rawValue: String) {
-        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let expression = BooleanExpression(rawValue: trimmedString) {
-            self = .boolean(expression: expression)
-            return
-        }
-        if let expression = ConditionalExpression(rawValue: trimmedString) {
-            self = .conditional(expression: expression)
-            return
-        }
-        return nil
-    }
+    /// millijoules
+    case mJ
+
+    // swiftlint:disable identifier_name
+    /// Joules
+    case J
+
+    // swiftlint:enable identifier_name
 
 }
