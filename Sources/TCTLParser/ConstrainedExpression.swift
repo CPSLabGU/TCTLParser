@@ -53,6 +53,8 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Foundation
+
 /// An ``Expression`` with physical constraints applied to it.
 /// 
 /// A `ConstrainedExpression` is an ``Expression`` that is restricted by physical constraints. For example,
