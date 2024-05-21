@@ -111,6 +111,22 @@ final class ExpressionTests: XCTestCase {
         )))
     )
 
+    /// A constrained expression.
+    let constrainedExpression = Expression.constrained(
+        expression: ConstrainedExpression(
+            expression: .language(
+                expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
+                    lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                    rhs: .literal(value: .bit(value: .high))
+                ))))
+            ),
+            constraints: [
+                .lessThan(constraint: .time(amount: 100, unit: .ns)),
+                .lessThan(constraint: .energy(amount: 200, unit: .mJ))
+            ]
+        )
+    )
+
     /// Test that the `rawValue` is generated correctly.
     func testRawValue() {
         XCTAssertEqual(vhdl.rawValue, rawValue)
@@ -126,6 +142,7 @@ final class ExpressionTests: XCTestCase {
             TCTLParser.Expression.disjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
             "\(rawValue) V \(impliesRawValue)"
         )
+        XCTAssertEqual(constrainedExpression.rawValue, "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
     }
 
     /// Test that the `init(rawValue:)` parses the expression correctly.
@@ -173,6 +190,26 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(
             TCTLParser.Expression(rawValue: "!(recoveryMode = '1')"),
             .not(expression: .precedence(expression: vhdl))
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"),
+            constrainedExpression
+        )
+    }
+
+    /// Test complex raw values in `init(rawValue:)`
+    func testComplexRawValueInit() {
+        XCTAssertEqual(
+            TCTLParser.Expression(
+                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> recoveryMode = '1'"
+            ),
+            .implies(lhs: constrainedExpression, rhs: vhdl)
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression(
+                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ recoveryMode = '1'"
+            ),
+            .conjunction(lhs: constrainedExpression, rhs: vhdl)
         )
     }
 

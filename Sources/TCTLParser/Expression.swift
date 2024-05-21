@@ -88,6 +88,9 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// A `TCTL` disjunction between two expressions.
     case disjunction(lhs: Expression, rhs: Expression)
 
+    /// An `Expression` constrained by a physical constraint.
+    case constrained(expression: ConstrainedExpression)
+
     /// The equivalent `TCTL` expression as a string.
     @inlinable public var rawValue: String {
         switch self {
@@ -105,6 +108,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return "\(lhs.rawValue) ^ \(rhs.rawValue)"
         case .disjunction(let lhs, let rhs):
             return "\(lhs.rawValue) V \(rhs.rawValue)"
+        case .constrained(let expression):
+            return expression.rawValue
         }
     }
 
@@ -117,6 +122,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedString.hasPrefix("!") else {
             self.init(not: String(trimmedString.dropFirst()))
+            return
+        }
+        guard !trimmedString.hasPrefix("{") else {
+            self.init(constrained: trimmedString)
             return
         }
         if trimmedString.count >= 2 {
@@ -163,6 +172,107 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     }
 
     // swiftlint:disable function_body_length
+
+    /// Create an `Expression` assuming the raw value starts with a constrained expression.
+    /// - Parameter rawValue: The `TCTL` string to parse.
+    @inlinable
+    init?(constrained rawValue: String) {
+        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedString.hasPrefix("{") else {
+            return nil
+        }
+        var bracketCount = 0
+        var terminationIndex = 0
+        for (index, character) in trimmedString.enumerated() {
+            guard character != "{" else {
+                bracketCount += 1
+                continue
+            }
+            if character == "}" {
+                bracketCount -= 1
+                guard bracketCount != 0 else {
+                    terminationIndex = index
+                    break
+                }
+            }
+        }
+        guard
+            bracketCount == 0,
+            trimmedString.endIndex > trimmedString.index(
+                trimmedString.startIndex, offsetBy: terminationIndex + 2
+            )
+        else {
+            return nil
+        }
+        let firstHalf = trimmedString[
+            ...trimmedString.index(trimmedString.startIndex, offsetBy: terminationIndex)
+        ]
+        let secondHalfRaw = trimmedString[
+            trimmedString.index(trimmedString.startIndex, offsetBy: terminationIndex + 1)...
+        ]
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard secondHalfRaw.hasPrefix("_") else {
+            return nil
+        }
+        let withoutUnderscore = secondHalfRaw.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard withoutUnderscore.hasPrefix("{") else {
+            return nil
+        }
+        let withoutStart = withoutUnderscore.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        var bracketCount2 = 1
+        var terminationIndex2 = 0
+        for (index, character) in withoutStart.enumerated() {
+            guard character != "{" else {
+                bracketCount2 += 1
+                continue
+            }
+            if character == "}" {
+                bracketCount2 -= 1
+                guard bracketCount2 != 0 else {
+                    terminationIndex2 = index
+                    break
+                }
+            }
+        }
+        guard bracketCount2 == 0 else {
+            return nil
+        }
+        let secondHalf = "_{" + withoutStart[
+            ...withoutStart.index(withoutStart.startIndex, offsetBy: terminationIndex2)
+        ]
+        guard let expression = ConstrainedExpression(rawValue: firstHalf + secondHalf) else {
+            return nil
+        }
+        guard
+            withoutStart.index(withoutStart.startIndex, offsetBy: terminationIndex2)
+                != withoutStart.index(before: withoutStart.endIndex)
+        else {
+            self = .constrained(expression: expression)
+            return
+        }
+        let remaining = withoutStart[
+            withoutStart.index(withoutStart.startIndex, offsetBy: terminationIndex2 + 1)...
+        ]
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !remaining.hasPrefix("->") else {
+            let rhsRaw = remaining.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let rhs = Expression(rawValue: rhsRaw) else {
+                return nil
+            }
+            self = .implies(lhs: .constrained(expression: expression), rhs: rhs)
+            return
+        }
+        guard
+            let first = remaining.first, CharacterSet.binaryLogicalOperators.contains(character: first)
+        else {
+            return nil
+        }
+        let rhsRaw = remaining.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let rhs = Expression(rawValue: rhsRaw) else {
+            return nil
+        }
+        self.init(binaryOperation: String(first), lhs: .constrained(expression: expression), rhs: rhs)
+    }
 
     /// Try and initialise an `Expression` where the first character is an open-bracket.
     /// - Parameter rawValue: The string containing the precedence.
