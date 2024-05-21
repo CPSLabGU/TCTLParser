@@ -1,4 +1,4 @@
-// Constraint.swift
+// ConstraintTests.swift
 // TCTLParser
 // 
 // Created by Morgan McColl.
@@ -53,77 +53,63 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import Foundation
+@testable import TCTLParser
+import XCTest
 
-/// A value representing some constraint on a physical quantity.
-/// 
-/// A `Constraint` is a value that constrains some physical quantity. The current supported constraints are
-/// time and energy. Each constraint is represented as a unsigned value with a corresponding unit. For
-/// example, a time constraint might be `5 ms` representing 5 milliseconds.
-/// - SeeAlso: ``TimeUnit``, ``EnergyUnit``.
-public enum Constraint: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+/// Test class for ``Constraint``.
+final class ConstraintTests: XCTestCase {
 
-    /// A time constraint.
-    case time(amount: UInt, unit: TimeUnit)
+    /// A test time constraint.
+    let timeConstraint = Constraint.time(amount: 100, unit: .ns)
 
-    /// An energy constraint.
-    case energy(amount: UInt, unit: EnergyUnit)
+    /// A test energy constraint.
+    let energyConstraint = Constraint.energy(amount: 200, unit: .J)
 
-    /// The variable symbol representation of the constraint. The symbol of time is `t`, while the symbol of
-    /// energy is `E`.
-    @inlinable public var symbol: String {
-        switch self {
-        case .time:
-            return "t"
-        case .energy:
-            return "E"
-        }
+    /// Test the symbol computed property.
+    func testSymbol() {
+        XCTAssertEqual(timeConstraint.symbol, "t")
+        XCTAssertEqual(energyConstraint.symbol, "E")
     }
 
-    /// The unsigned unitless amount of this constraint.
-    @inlinable public var amount: UInt {
-        switch self {
-        case .time(let amount, _):
-            return amount
-        case .energy(let amount, _):
-            return amount
-        }
+    /// Test that amount computed property.
+    func testAmount() {
+        XCTAssertEqual(timeConstraint.amount, 100)
+        XCTAssertEqual(energyConstraint.amount, 200)
     }
 
-    /// The string representation of the unit in this constraint.
-    @inlinable public var unit: String {
-        switch self {
-        case .time(_, let unit):
-            return unit.rawValue
-        case .energy(_, let unit):
-            return unit.rawValue
-        }
+    /// Test the unit computed property.
+    func testUnit() {
+        XCTAssertEqual(timeConstraint.unit, "ns")
+        XCTAssertEqual(energyConstraint.unit, "J")
     }
 
-    /// The equivalent string representing the quantity of this constraint together with the `amount` and
-    /// `unit`.
-    @inlinable public var rawValue: String {
-        "\(amount) \(unit)"
+    /// Test the raw value.
+    func testRawValue() {
+        XCTAssertEqual(timeConstraint.rawValue, "100 ns")
+        XCTAssertEqual(energyConstraint.rawValue, "200 J")
     }
 
-    /// Create a constraint from it's `rawValue` representation.
-    /// - Parameter rawValue: A string representation of the constraint.
-    @inlinable
-    public init?(rawValue: String) {
-        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        let components = trimmedString.components(separatedBy: .whitespacesAndNewlines)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-        guard components.count == 2, let amount = UInt(components[0]) else {
-            return nil
-        }
-        if let timeUnit = TimeUnit(rawValue: components[1]) {
-            self = .time(amount: amount, unit: timeUnit)
-        } else if let energyUnit = EnergyUnit(rawValue: components[1]) {
-            self = .energy(amount: amount, unit: energyUnit)
-        } else {
-            return nil
-        }
+    /// Test that `init(rawValue:)` parses the raw value correctly.
+    func testRawValueInit() {
+        XCTAssertEqual(Constraint(rawValue: "100 ns"), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "200 J"), energyConstraint)
+        XCTAssertEqual(Constraint(rawValue: "100\nns"), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "100    ns"), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "   100    ns  "), timeConstraint)
+        XCTAssertEqual(Constraint(rawValue: "\n100\nns\n"), timeConstraint)
+    }
+
+    /// Test the `init(rawValue:)` detects invalid strings.
+    func testInvalidRawValueInit() {
+        XCTAssertNil(Constraint(rawValue: "100"))
+        XCTAssertNil(Constraint(rawValue: "ns"))
+        XCTAssertNil(Constraint(rawValue: "100 ns J"))
+        XCTAssertNil(Constraint(rawValue: ""))
+        XCTAssertNil(Constraint(rawValue: "100ns"))
+        XCTAssertNil(Constraint(rawValue: "100 ns 1"))
+        XCTAssertNil(Constraint(rawValue: "100"))
+        XCTAssertNil(Constraint(rawValue: "     "))
+        XCTAssertNil(Constraint(rawValue: " "))
     }
 
 }
