@@ -55,21 +55,34 @@
 
 import Foundation
 
+/// A statement that is used to constrain a physical property.
 public enum ConstrainedStatement: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
+    /// An expression that is constrained by this statement must cost less than the constrained physical
+    /// property.
     case lessThan(constraint: Constraint)
 
+    /// An expression that is constrained by this statement must cost less than or equal to the
+    /// constrained physical property.
     case lessThanOrEqual(constraint: Constraint)
 
+    /// An expression that is constrained by this statement must cost more than the constrained physical
+    /// property.
     case greaterThan(constraint: Constraint)
 
+    /// An expression that is constrained by this statement must cost more than or equal to the physical
+    /// property.
     case greaterThanOrEqual(constraint: Constraint)
 
+    /// An expression that is constrained by this statement must cost exactly the same as the physical
+    /// property.
     case equal(constraint: Constraint)
 
+    /// An expression that is constrained by this statement must not cost the same as the physical property.
     case notEqual(constraint: Constraint)
 
-    public var rawValue: String {
+    /// The equivalent statement as a string that represents this constraint.
+    @inlinable public var rawValue: String {
         switch self {
         case .lessThan(let constraint):
             return "\(constraint.symbol) < \(constraint.rawValue)"
@@ -86,10 +99,13 @@ public enum ConstrainedStatement: RawRepresentable, Equatable, Hashable, Codable
         }
     }
 
+    /// Create this statement from it's `rawValue` representation.
+    /// - Parameter rawValue: The `rawValue` representing this statement.
+    @inlinable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard
-            let operation = ["<", "<=", ">", ">=", "==", "!="].first(where: { trimmedString.contains($0) })
+            let operation = ["<=", ">=", "==", "!=", "<", ">"].first(where: { trimmedString.contains($0) })
         else {
             return nil
         }
@@ -102,6 +118,13 @@ public enum ConstrainedStatement: RawRepresentable, Equatable, Hashable, Codable
         self.init(symbol: components[0], operation: operation, constraint: constraint)
     }
 
+    /// Create this statement from the variable symbol of the physical quantity, the operation to perform and
+    /// the amount to constraint by.
+    /// - Parameters:
+    ///   - symbol: The symbol of the variable representing the physical quantity, e.g. `t, E`.
+    ///   - operation: The operation to constrain by, e.g. `<, >, ==, !=, <=, >=`.
+    ///   - constraint: The amount to constrain by.
+    @inlinable
     init?(symbol: String, operation: String, constraint: Constraint) {
         let symbolTrimmed = symbol.trimmingCharacters(in: .whitespacesAndNewlines)
         let operationTrimmed = operation.trimmingCharacters(in: .whitespacesAndNewlines)
