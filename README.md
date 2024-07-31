@@ -6,7 +6,7 @@
 [![Linux CI](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-linux.yml/badge.svg)](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-linux.yml)
 [![Windows CI](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-windows.yml/badge.svg)](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-windows.yml)
 
-A `TCTL` parser written in [swift](swift.org).
+A `TCTL` parser written in [swift](https://www.swift.org).
 
 ## Supported Platforms
 
