@@ -74,10 +74,15 @@ final class SpecificationTests: XCTestCase {
     let rawValueWithComments = """
     // spec:language VHDL
 
-    // A recovery mode requirement.
-    A G recoveryMode = '1'
+    -- Another comment.
+    -- Another comment2.
 
-    // A failure count requirement.
+    -- A recovery mode requirement.
+    A G recoveryMode = '1' -- Check recovery mode is high.
+    -- Comment 3
+
+    -- A failure count requirement.
+    -- Multiline comment.
     A G failureCount = 3
 
     """

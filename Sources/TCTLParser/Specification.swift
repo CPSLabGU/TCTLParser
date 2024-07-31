@@ -67,7 +67,8 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
     /// The requirements specified in `TCTL` formulas.
     public let requirements: [Expression]
 
-    /// The equivalent `String` representation defining this `Specification`.
+    /// The equivalent `String` representation defining this `Specification`. Please note that this `rawValue`
+    /// does not include the comments that may have been present in the original representation.
     @inlinable public var rawValue: String {
         """
         \(configuration.rawValue)
@@ -96,10 +97,13 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
             return
         }
         let configurationRaw = components[..<firstIndex].joined(separator: "\n")
-        let requirementsRaw = components[firstIndex...].lazy
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.hasPrefix("//") }
-            .joined(separator: "\n")
+        let requirementsWithoutComments = components[firstIndex...].compactMap {
+            $0.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("--")
+                ? nil
+                : $0.components(separatedBy: "--").first
+        }
+        let requirementsRaw = requirementsWithoutComments.joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         self.init(configurationRaw: configurationRaw, requirementsRaw: requirementsRaw)
     }
 
