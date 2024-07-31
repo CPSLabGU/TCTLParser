@@ -6,6 +6,8 @@
 [![Linux CI](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-linux.yml/badge.svg)](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-linux.yml)
 [![Windows CI](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-windows.yml/badge.svg)](https://github.com/CPSLabGU/TCTLParser/actions/workflows/ci-windows.yml)
 
+A `TCTL` parser written in [swift](swift.org).
+
 ## Supported Platforms
 
 - Swift 5.7 or later.
@@ -35,7 +37,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/cpslabgu/TCTLParser.git", from: "1.0.0")
+        .package(url: "https://github.com/cpslabgu/TCTLParser.git", from: "1.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
