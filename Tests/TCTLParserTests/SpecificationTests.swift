@@ -70,6 +70,18 @@ final class SpecificationTests: XCTestCase {
 
     """
 
+    /// The test `rawValue` with comments.
+    let rawValueWithComments = """
+    // spec:language VHDL
+
+    // A recovery mode requirement.
+    A G recoveryMode = '1'
+
+    // A failure count requirement.
+    A G failureCount = 3
+
+    """
+
     /// The expected specification.
     let expected = Specification(
         configuration: Configuration(language: .vhdl),
@@ -94,6 +106,11 @@ final class SpecificationTests: XCTestCase {
     /// Test that the `rawValue` is generated correctly.
     func testRawValue() {
         XCTAssertEqual(expected.rawValue, rawValue)
+    }
+
+    /// Test that the `init(rawValue:)` correctly parses the `TCTL` file with comments.
+    func testRawValueWithCommentsInit() {
+        XCTAssertEqual(Specification(rawValue: rawValueWithComments), expected)
     }
 
     /// Test that the `init(rawValue:)` correctly parses the `TCTL` file.

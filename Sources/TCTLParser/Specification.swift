@@ -96,7 +96,10 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
             return
         }
         let configurationRaw = components[..<firstIndex].joined(separator: "\n")
-        let requirementsRaw = components[firstIndex...].joined(separator: "\n")
+        let requirementsRaw = components[firstIndex...].lazy
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.hasPrefix("//") }
+            .joined(separator: "\n")
         self.init(configurationRaw: configurationRaw, requirementsRaw: requirementsRaw)
     }
 
