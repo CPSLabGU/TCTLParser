@@ -118,6 +118,8 @@ public struct Specification: RawRepresentable, Equatable, Hashable, Codable, Sen
             return nil
         }
         let requirementsComponents = requirementsRaw.components(separatedBy: "\n\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
         let requirements = requirementsComponents.compactMap(Expression.init(rawValue:))
         guard requirements.count == requirementsComponents.count else {
             return nil

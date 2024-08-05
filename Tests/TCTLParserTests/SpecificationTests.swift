@@ -156,4 +156,75 @@ final class SpecificationTests: XCTestCase {
         ))
     }
 
+    // swiftlint:disable line_length
+    // swiftlint:disable function_body_length
+
+    /// Test spec parsing with comments and spacing.
+    func testSpacingInSpec() {
+        let raw = """
+        // spec:language VHDL
+
+        -- Start RB5-i, RB5-ii and RB5-iii
+
+        A G operationalMode = '1' -> bootMode = '0'
+
+        A G bootMode = '1' -> operationalMode = '0'
+
+        A G bootMode = '1' and bootSuccess = '1' -> {A F operationalMode = '1'}_{t <= 2 us}
+
+        -- End RB5-i, RB5-ii and RB5-iii
+        -- Start RB6-i
+
+        A G bootMode = '1' -> A bootMode = '1' W operationalMode = '1'
+
+        A G bootMode = '1' -> E bootMode = '1' U operationalMode = '1'
+
+        A G operationalMode = '1' -> A operationalMode = '1' W bootMode = '1'
+
+        A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'
+
+        A X bootMode = '1'
+
+        -- End RB6-i
+
+        A G timerOn = '1' and pulse1ms = '1' -> {A F bootMode = '1'}_{t <= 2 us}
+
+        -- Start RB3-i, RB3-ii
+
+        A G bootMode = '1' and bootFailure = '1' and bootSuccess = '0' -> {A F currentState = Restart}_{t <= 2 us}
+
+        A G currentState = Restart -> pulse1ms /= '1' -> {A F timerOn = '1'}_{t <= 1 us}
+
+        A G currentState /= Initial -> A G timerOn = '1' -> powerOn = '0'
+
+        A G currentState /= Initial -> A G timerOn = '0' -> powerOn = '1'
+
+        A G currentState = Initial -> {A F currentState /= Initial}_{t <= 1 us}
+
+        A G currentState /= Initial -> A G currentState /= Initial
+
+        A G pulse1ms = '1' -> {A X timerOn = '0'}_{t <= 1 us}
+
+        A G timerOn = '1' -> A timerOn = '1' W pulse1ms = '1'
+
+        A G timerOn = '1' -> E timerOn = '1' U pulse1ms = '1'
+
+        A X powerOn = '1'
+
+        A X timerOn = '0'
+
+        -- End RB3-i, RB3-ii
+        -- Start
+
+        A G operationalMode = '1' and operationalFailure = '1' -> A F currentState = Restart
+
+        -- End
+
+        """
+        XCTAssertNotNil(Specification(rawValue: raw))
+    }
+
+    // swiftlint:enable function_body_length
+    // swiftlint:enable line_length
+
 }
