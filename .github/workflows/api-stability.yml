@@ -31,7 +31,7 @@ jobs:
           fetch-tags: true
       
       - name: Check API Stability 
-        run: swift package diagnose-api-breaking-changes `git tag | sort --version-sort | tail -n1`
+        run: swift package diagnose-api-breaking-changes `git describe --tags --abbrev=0`
   
   build_macos:
     name: Check Swift API Stability on MacOs.
@@ -62,7 +62,7 @@ jobs:
       #  run: sed -i 's/git@github.com:/https:\/\/${{ secrets.ACCESS_TOKEN }}@github.com\//g' Package.swift
 
       - name: Check API Stability 
-        run: swift package diagnose-api-breaking-changes `git tag | sort --version-sort | tail -n1`
+        run: swift package diagnose-api-breaking-changes `git describe --tags --abbrev=0`
   
   build_windows:
     name: Check Swift API Stability on Windows.
@@ -93,5 +93,5 @@ jobs:
 
       - name: Check API Stability
         shell: bash
-        run: swift package diagnose-api-breaking-changes `git tag | sort --version-sort | tail -n1`
+        run: swift package diagnose-api-breaking-changes `git describe --tags --abbrev=0`
       
