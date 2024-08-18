@@ -107,4 +107,26 @@ final class ExpressionSubExpressionTests: XCTestCase {
         )
     }
 
+    /// Test that negation works before a language expression.
+    func testNegationInLanguage() {
+        let falseExp = Expression.language(expression: .vhdl(expression: .conditional(
+            expression: .literal(value: false)
+        )))
+        let expected = Expression.quantified(expression: .always(expression: .globally(
+            expression: .not(expression: falseExp)
+        )))
+        XCTAssertEqual(Expression(rawValue: "A G !false"), expected)
+    }
+
+    /// Test that negation works for sub-expressions.
+    func testNegationInSubExpression() {
+        let falseExp = Expression.language(expression: .vhdl(expression: .conditional(
+            expression: .literal(value: false)
+        )))
+        let expected = Expression.not(expression: .quantified(expression: .always(expression: .globally(
+            expression: .not(expression: falseExp)
+        ))))
+        XCTAssertEqual(Expression(rawValue: "!A G !false"), expected)
+    }
+
 }

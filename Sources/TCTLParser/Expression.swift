@@ -317,12 +317,18 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// - Parameter rawValue: The expression the `not` is applied to.
     @inlinable
     init?(not rawValue: String) {
-        guard let expression = Expression(rawValue: rawValue) else {
+        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let expression = Expression(rawValue: trimmedString) else {
             return nil
         }
         switch expression {
         case .language:
-            return nil
+            guard !trimmedString.contains(
+                where: { CharacterSet.whitespacesAndNewlines.contains(character: $0) }
+            ) else {
+                return nil
+            }
+            self = .not(expression: expression)
         default:
             self = .not(expression: expression)
         }
