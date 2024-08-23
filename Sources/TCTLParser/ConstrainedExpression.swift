@@ -64,7 +64,7 @@ import Foundation
 public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
     /// The ``Expression`` to constrain.
-    public let expression: Expression
+    public let expression: GloballyQuantifiedExpression
 
     /// The constraints to apply to this expression. This array cannot be empty.
     public let constraints: [ConstrainedStatement]
@@ -108,7 +108,7 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
         }
         let expressionRaw = remaining[..<remaining.index(remaining.startIndex, offsetBy: terminatingIndex)]
         guard
-            let expression = Expression(rawValue: String(expressionRaw)),
+            let expression = GloballyQuantifiedExpression(rawValue: String(expressionRaw)),
             remaining.count > terminatingIndex + 1
         else {
             return nil
@@ -141,7 +141,7 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
     ///   - constraints: A non-empty array of constraints to apply to the `expression`.
     /// - Warning: An empty array of constraints will cause a fatal error.
     @inlinable
-    public init(expression: Expression, constraints: [ConstrainedStatement]) {
+    public init(expression: GloballyQuantifiedExpression, constraints: [ConstrainedStatement]) {
         guard !constraints.isEmpty else {
             fatalError("Constraints cannot be empty!")
         }

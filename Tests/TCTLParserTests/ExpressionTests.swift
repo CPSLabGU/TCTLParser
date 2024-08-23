@@ -114,12 +114,12 @@ final class ExpressionTests: XCTestCase {
     /// A constrained expression.
     let constrainedExpression = Expression.constrained(
         expression: ConstrainedExpression(
-            expression: .language(
+            expression: .always(expression: .finally(expression: .language(
                 expression: .vhdl(expression: .conditional(expression: .comparison(value: .equality(
                     lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
                     rhs: .literal(value: .bit(value: .high))
                 ))))
-            ),
+            ))),
             constraints: [
                 .lessThan(constraint: .time(amount: 100, unit: .ns)),
                 .lessThan(constraint: .energy(amount: 200, unit: .mJ))
@@ -142,7 +142,7 @@ final class ExpressionTests: XCTestCase {
             TCTLParser.Expression.disjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
             "\(rawValue) V \(impliesRawValue)"
         )
-        XCTAssertEqual(constrainedExpression.rawValue, "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
+        XCTAssertEqual(constrainedExpression.rawValue, "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
     }
 
     /// Test that the `init(rawValue:)` parses the expression correctly.
@@ -192,7 +192,7 @@ final class ExpressionTests: XCTestCase {
             .not(expression: .precedence(expression: vhdl))
         )
         XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"),
+            TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"),
             constrainedExpression
         )
     }
@@ -200,40 +200,42 @@ final class ExpressionTests: XCTestCase {
     /// Test complex raw values in `init(rawValue:)`
     func testComplexRawValueInit() {
         XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}   "),
+            TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}   "),
             constrainedExpression
         )
         XCTAssertEqual(
             TCTLParser.Expression(
-                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> recoveryMode = '1'"
+                rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> recoveryMode = '1'"
             ),
             .implies(lhs: constrainedExpression, rhs: vhdl)
         )
         XCTAssertEqual(
             TCTLParser.Expression(
-                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ recoveryMode = '1'"
+                rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ recoveryMode = '1'"
             ),
             .conjunction(lhs: constrainedExpression, rhs: vhdl)
         )
         XCTAssertEqual(
             TCTLParser.Expression(
-                rawValue: "recoveryMode = '1' ^ {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
+                rawValue: "recoveryMode = '1' ^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
             ),
             .conjunction(lhs: vhdl, rhs: constrainedExpression)
         )
         XCTAssertEqual(
             TCTLParser.Expression(
-                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} " +
-                    "^ {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
+                rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} " +
+                    "^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
             ),
             .conjunction(lhs: constrainedExpression, rhs: constrainedExpression)
         )
         XCTAssertEqual(
             TCTLParser.Expression(
-                rawValue: "{recoveryMode = '1' ^ {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}_{t < 200 ns}"
+                rawValue: "{A F recoveryMode = '1' ^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}_{t < 200 ns}"
             ),
             .constrained(expression: ConstrainedExpression(
-                expression: .conjunction(lhs: vhdl, rhs: constrainedExpression),
+                expression: .always(expression: .finally(
+                    expression: .conjunction(lhs: vhdl, rhs: constrainedExpression)
+                )),
                 constraints: [.lessThan(constraint: .time(amount: 200, unit: .ns))]
             ))
         )

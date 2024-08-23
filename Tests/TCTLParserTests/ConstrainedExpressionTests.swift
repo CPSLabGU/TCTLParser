@@ -61,9 +61,9 @@ import XCTest
 final class ConstrainedExpressionTests: XCTestCase {
 
     /// A `true` expression.
-    let expression = Expression.language(expression: .vhdl(expression: .conditional(
-        expression: .literal(value: true)
-    )))
+    let expression = GloballyQuantifiedExpression.always(expression: .finally(
+        expression: .language(expression: .vhdl(expression: .conditional(expression: .literal(value: true))))
+    ))
 
     /// An array of constraints to apply to `expression`.
     let constraints = [
@@ -84,20 +84,20 @@ final class ConstrainedExpressionTests: XCTestCase {
 
     /// Test that `rawValue` is created correctly.
     func testRawValue() {
-        XCTAssertEqual(constrainedExpression.rawValue, "{true}_{t < 100 ns, E < 200 mJ}")
+        XCTAssertEqual(constrainedExpression.rawValue, "{A F true}_{t < 100 ns, E < 200 mJ}")
     }
 
     /// Test the `init(rawValue:)` parses the `rawValue` correctly.
     func testRawValueInit() {
         XCTAssertEqual(
-            ConstrainedExpression(rawValue: "{true}_{t < 100 ns, E < 200 mJ}"), constrainedExpression
+            ConstrainedExpression(rawValue: "{A F true}_{t < 100 ns, E < 200 mJ}"), constrainedExpression
         )
         XCTAssertEqual(
-            ConstrainedExpression(rawValue: "\n{\ntrue\n}_{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
+            ConstrainedExpression(rawValue: "\n{\nA F true\n}_{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
             constrainedExpression
         )
         XCTAssertEqual(
-            ConstrainedExpression(rawValue: "\n{\ntrue\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
+            ConstrainedExpression(rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
             constrainedExpression
         )
     }
