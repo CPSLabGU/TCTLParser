@@ -230,7 +230,9 @@ final class ExpressionTests: XCTestCase {
         )
         XCTAssertEqual(
             TCTLParser.Expression(
-                rawValue: "{A F recoveryMode = '1' ^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}_{t < 200 ns}"
+                rawValue: """
+                {A F recoveryMode = '1' ^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}_{t < 200 ns}
+                """
             ),
             .constrained(expression: ConstrainedExpression(
                 expression: .always(expression: .finally(
