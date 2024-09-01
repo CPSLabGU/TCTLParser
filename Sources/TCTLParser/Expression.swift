@@ -1,30 +1,30 @@
 // Expression.swift
 // TCTLParser
-// 
+//
 // Created by Morgan McColl.
 // Copyright © 2024 Morgan McColl. All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright
 //    notice, this list of conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above
 //    copyright notice, this list of conditions and the following
 //    disclaimer in the documentation and/or other materials
 //    provided with the distribution.
-// 
+//
 // 3. All advertising materials mentioning features or use of this
 //    software must display the following acknowledgement:
-// 
+//
 //    This product includes software developed by Morgan McColl.
-// 
+//
 // 4. Neither the name of the author nor the names of contributors
 //    may be used to endorse or promote products derived from this
 //    software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,18 +36,18 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // -----------------------------------------------------------------------
 // This program is free software; you can redistribute it and/or
 // modify it under the above terms or under the terms of the GNU
 // General Public License as published by the Free Software Foundation;
 // either version 2 of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see http://www.gnu.org/licenses/
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
@@ -56,14 +56,14 @@
 import Foundation
 
 /// A `TCTL` expression.
-/// 
+///
 /// This `enum` represents the foundational `TCTL` expressions that can be `quantified`. Instances of this
 /// type are not valid on their own, but must also be quantified using ``GloballyQuantifiedExpression`` and
 /// ``PathQuantifiedExpression``.
 public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
 
     /// A `TCTL` expression that states that `lhs` implies `rhs`.
-    /// 
+    ///
     /// The syntax for this expression is `<lhs> -> <rhs>`.
     case implies(lhs: Expression, rhs: Expression)
 
@@ -74,7 +74,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     case precedence(expression: Expression)
 
     /// A `TCTL` expression that contains language-specific code.
-    /// 
+    ///
     /// - Note: Current supported languages are defined in the ``Language`` enum and ``LanguageExpression``
     /// enum.
     case language(expression: LanguageExpression)
@@ -114,6 +114,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     }
 
     // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable function_body_length
 
     /// Create the expression from the `TCTL` expression as a string.
     /// - Parameter rawValue: The `TCTL` expression as a string.
@@ -131,7 +132,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         if trimmedString.count >= 2 {
             let prefixString = trimmedString[
                 trimmedString.startIndex...trimmedString.index(after: trimmedString.startIndex)
-            ].trimmingCharacters(in: .whitespacesAndNewlines)
+            ]
+            .trimmingCharacters(in: .whitespacesAndNewlines)
             if prefixString.count == 1 {
                 let firstChar = prefixString[prefixString.startIndex]
                 if CharacterSet.globalQuantifiers.contains(character: firstChar) {
@@ -171,6 +173,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         self = .implies(lhs: lhs, rhs: rhs)
     }
 
+    // swiftlint:enable function_body_length
     // swiftlint:disable function_body_length
 
     /// Create an `Expression` assuming the raw value starts with a constrained expression.
@@ -323,9 +326,11 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         switch expression {
         case .language:
-            guard !trimmedString.contains(
-                where: { CharacterSet.whitespacesAndNewlines.contains(character: $0) }
-            ) else {
+            guard
+                !trimmedString.contains(
+                    where: { CharacterSet.whitespacesAndNewlines.contains(character: $0) }
+                )
+            else {
                 return nil
             }
             self = .not(expression: expression)
@@ -342,27 +347,38 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         guard trimmedString.count > 4 else {
             return nil
         }
-        guard let firstOperation = trimmedString.enumerated().first(where: { index, character in
-            guard
-                index > trimmedString.startIndex.utf16Offset(in: trimmedString),
-                index < trimmedString.index(before: trimmedString.endIndex).utf16Offset(in: trimmedString)
-            else {
-                return false
-            }
-            let before = trimmedString[trimmedString.index(trimmedString.startIndex, offsetBy: index - 1)]
-            let after = trimmedString[trimmedString.index(trimmedString.startIndex, offsetBy: index + 1)]
-            return CharacterSet.whitespacesAndNewlines.contains(character: before) &&
-                CharacterSet.whitespacesAndNewlines.contains(character: after) &&
-                character == "^" || character == "V"
-        }) else {
+        guard
+            let firstOperation = trimmedString.enumerated()
+                .first(where: { index, character in
+                    guard
+                        index > trimmedString.startIndex.utf16Offset(in: trimmedString),
+                        index
+                            < trimmedString.index(before: trimmedString.endIndex)
+                            .utf16Offset(in: trimmedString)
+                    else {
+                        return false
+                    }
+                    let before = trimmedString[
+                        trimmedString.index(trimmedString.startIndex, offsetBy: index - 1)
+                    ]
+                    let after = trimmedString[
+                        trimmedString.index(trimmedString.startIndex, offsetBy: index + 1)
+                    ]
+                    return CharacterSet.whitespacesAndNewlines.contains(character: before)
+                        && CharacterSet.whitespacesAndNewlines.contains(character: after) && character == "^"
+                        || character == "V"
+                })
+        else {
             return nil
         }
         let lhsRaw = trimmedString[
             ..<(trimmedString.index(trimmedString.startIndex, offsetBy: firstOperation.0))
-        ].trimmingCharacters(in: .whitespacesAndNewlines)
+        ]
+        .trimmingCharacters(in: .whitespacesAndNewlines)
         let rhsRaw = trimmedString[
             trimmedString.index(trimmedString.startIndex, offsetBy: firstOperation.0 + 1)...
-        ].trimmingCharacters(in: .whitespacesAndNewlines)
+        ]
+        .trimmingCharacters(in: .whitespacesAndNewlines)
         guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
             return nil
         }
