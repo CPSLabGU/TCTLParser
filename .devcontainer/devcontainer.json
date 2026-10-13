@@ -23,7 +23,7 @@
 				"swiftlang.swift-vscode"
 			],
 			"settings": {
-				"swift.path": "/home/morgan/.swiftenv/shims",
+				"swift.path": "/usr/bin",
 				"editor.inlayHints.enabled": "offUnlessPressed",
 				"swift-coverage.highlightsCoveredGutter": false,
 				"swift-coverage.highlightsMixedGutter": false,
