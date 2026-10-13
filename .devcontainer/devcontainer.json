@@ -24,13 +24,10 @@
 			],
 			"settings": {
 				"swift.path": "/usr/bin",
-				"editor.inlayHints.enabled": "offUnlessPressed",
-				"swift-coverage.highlightsCoveredGutter": false,
-				"swift-coverage.highlightsMixedGutter": false,
-				"swift-coverage.highlightsNotCoveredGutter": false
+				"editor.inlayHints.enabled": "offUnlessPressed"
 			}
     	}
-	},
+	}
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
