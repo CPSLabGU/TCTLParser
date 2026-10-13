@@ -8,7 +8,7 @@ RUN wget -O /tmp/swiftlint.zip "https://github.com/realm/SwiftLint/archive/refs/
     && unzip /tmp/swiftlint.zip -d /tmp \
     && cd /tmp/SwiftLint-0.65.1 \
     && swift build -c release \
-    && install -m 0755 "$(swift build -c release --show-bin-path)/swiftlint" /usr/bin/swift-lint \
+    && install -m 0755 "$(swift build -c release --show-bin-path)/swiftlint" /usr/bin/swiftlint \
     && rm -rf /tmp/SwiftLint-0.65.1 /tmp/swiftlint.zip
 
 RUN wget -O /tmp/swift-format.zip https://github.com/swiftlang/swift-format/archive/refs/tags/604.0.0.zip \
