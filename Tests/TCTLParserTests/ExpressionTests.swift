@@ -69,6 +69,9 @@ final class ExpressionTests: XCTestCase {
     /// A `rawValue` containing an `implies` case.
     let impliesRawValue = "failureCount = 3 -> recoveryMode = '1'"
 
+    /// A `rawValue` containing an `equivalence` case.
+    let equivalenceRawValue = "failureCount = 3 <-> recoveryMode = '1'"
+
     /// A `rawValue` containing multiple expressions.
     let subExpressionRawValue = "failureCount = 3 -> A G recoveryMode = '1' -> finished = '1'"
 
@@ -86,6 +89,30 @@ final class ExpressionTests: XCTestCase {
 
     /// The equivalent expression of `impliesRawValue`.
     let impliesExpression = Expression.implies(
+        lhs: .vhdl(
+            expression: .conditional(
+                expression: .comparison(
+                    value: .equality(
+                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        rhs: .literal(value: .integer(value: 3))
+                    )
+                )
+            )
+        ),
+        rhs: .vhdl(
+            expression: .conditional(
+                expression: .comparison(
+                    value: .equality(
+                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        rhs: .literal(value: .bit(value: .high))
+                    )
+                )
+            )
+        )
+    )
+
+    /// The equivalent expression of `impliesRawValue`.
+    let equivalenceExpression = Expression.equivalence(
         lhs: .vhdl(
             expression: .conditional(
                 expression: .comparison(
@@ -186,6 +213,7 @@ final class ExpressionTests: XCTestCase {
     func testRawValue() {
         XCTAssertEqual(vhdl.rawValue, rawValue)
         XCTAssertEqual(impliesExpression.rawValue, impliesRawValue)
+        XCTAssertEqual(equivalenceExpression.rawValue, equivalenceRawValue)
         XCTAssertEqual(subExpression.rawValue, subExpressionRawValue)
         XCTAssertEqual(TCTLParser.Expression.precedence(expression: vhdl).rawValue, "(\(rawValue))")
         XCTAssertEqual(TCTLParser.Expression.not(expression: vhdl).rawValue, "!\(rawValue)")
@@ -206,6 +234,7 @@ final class ExpressionTests: XCTestCase {
     func testRawValueInit() {
         XCTAssertEqual(Expression(rawValue: rawValue), vhdl)
         XCTAssertEqual(Expression(rawValue: impliesRawValue), impliesExpression)
+        XCTAssertEqual(Expression(rawValue: equivalenceRawValue), equivalenceExpression)
         XCTAssertEqual(Expression(rawValue: subExpressionRawValue), subExpression)
         XCTAssertEqual(Expression(rawValue: "(\(rawValue))"), .precedence(expression: vhdl))
         XCTAssertEqual(
@@ -300,6 +329,16 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(
             TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}   "),
             constrainedExpression
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression(rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}"),
+            .constrained(expression: ConstrainedExpression(
+                expression: .always(expression: .finally(expression: equivalenceExpression)),
+                constraints: [
+                    .lessThan(constraint: .time(amount: 100, unit: .ns)),
+                    .lessThan(constraint: .energy(amount: 200, unit: .mJ))
+                ]
+            ))
         )
         XCTAssertEqual(
             TCTLParser.Expression(
@@ -443,6 +482,9 @@ final class ExpressionTests: XCTestCase {
             TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'")
         )
         XCTAssertNil(
+            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'")
+        )
+        XCTAssertNil(
             TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'")
         )
         XCTAssertNil(
@@ -453,6 +495,9 @@ final class ExpressionTests: XCTestCase {
         )
         XCTAssertNil(
             TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'")
+        )
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'")
         )
         XCTAssertNil(TCTLParser.Expression(rawValue: "()"))
         XCTAssertNil(TCTLParser.Expression(precedence: rawValue))
@@ -493,6 +538,10 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(
             TCTLParser.Expression(binaryOperation: "->", lhs: vhdl, rhs: impliesExpression),
             .implies(lhs: vhdl, rhs: impliesExpression)
+        )
+        XCTAssertEqual(
+            TCTLParser.Expression(binaryOperation: "<->", lhs: vhdl, rhs: equivalenceExpression),
+            .equivalence(lhs: vhdl, rhs: equivalenceExpression)
         )
         XCTAssertNil(TCTLParser.Expression(binaryOperation: "v", lhs: vhdl, rhs: impliesExpression))
     }

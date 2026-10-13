@@ -67,6 +67,12 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     /// The syntax for this expression is `<lhs> -> <rhs>`.
     case implies(lhs: Expression, rhs: Expression)
 
+    /// A `TCTL` expression that states that `lhs` is equivalent to `rhs`.
+    ///
+    /// The syntax for this expression is `<lhs> <-> <rhs>`. This statement is equivalent to if and only if
+    /// or an XNOR operation.
+    case equivalence(lhs: Expression, rhs: Expression)
+
     /// A `TCTL` expression that is globally quantified.
     case quantified(expression: GloballyQuantifiedExpression)
 
@@ -96,6 +102,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         switch self {
         case .implies(let lhs, let rhs):
             return "\(lhs.rawValue) -> \(rhs.rawValue)"
+        case .equivalence(let lhs, let rhs):
+            return "\(lhs.rawValue) <-> \(rhs.rawValue)"
         case .quantified(let expression):
             return expression.rawValue
         case .precedence(let expression):
@@ -153,22 +161,28 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             self = logicalExpression
             return
         }
-        guard let impliesIndex = trimmedString.range(of: "->") else {
+        let equivalenceIndex = trimmedString.range(of: "<->")
+        let impliesIndex = trimmedString.range(of: "->")
+        guard let index = equivalenceIndex ?? impliesIndex else {
             guard let expression = LanguageExpression(rawValue: trimmedString) else {
                 return nil
             }
             self = .language(expression: expression)
             return
         }
-        let lhsRaw = trimmedString[..<impliesIndex.lowerBound]
-        guard impliesIndex.upperBound < trimmedString.index(before: trimmedString.endIndex) else {
+        let lhsRaw = trimmedString[..<index.lowerBound]
+        guard index.upperBound < trimmedString.index(before: trimmedString.endIndex) else {
             return nil
         }
-        let rhsRaw = trimmedString[trimmedString.index(after: impliesIndex.upperBound)...]
+        let rhsRaw = trimmedString[trimmedString.index(after: index.upperBound)...]
         guard
             let lhs = Expression(rawValue: String(lhsRaw)), let rhs = Expression(rawValue: String(rhsRaw))
         else {
             return nil
+        }
+        if (equivalenceIndex != nil) {
+            self = .equivalence(lhs: lhs, rhs: rhs)
+            return
         }
         self = .implies(lhs: lhs, rhs: rhs)
     }
@@ -233,6 +247,14 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         let remaining = withoutStart[withoutStart.index(after: terminationIndex2)...]
             .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !remaining.hasPrefix("<->") else {
+            let rhsRaw = remaining.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let rhs = Expression(rawValue: rhsRaw) else {
+                return nil
+            }
+            self = .equivalence(lhs: .constrained(expression: expression), rhs: rhs)
+            return
+        }
         guard !remaining.hasPrefix("->") else {
             let rhsRaw = remaining.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)
             guard let rhs = Expression(rawValue: rhsRaw) else {
@@ -398,6 +420,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             self = .conjunction(lhs: lhs, rhs: rhs)
         case "V":
             self = .disjunction(lhs: lhs, rhs: rhs)
+        case "<->":
+            self = .equivalence(lhs: lhs, rhs: rhs)
         case "->":
             self = .implies(lhs: lhs, rhs: rhs)
         default:
