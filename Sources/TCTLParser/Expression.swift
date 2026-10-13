@@ -55,6 +55,8 @@
 
 import Foundation
 
+// swiftlint:disable type_body_length
+
 /// A `TCTL` expression.
 ///
 /// This `enum` represents the foundational `TCTL` expressions that can be `quantified`. Instances of this
@@ -180,7 +182,7 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         else {
             return nil
         }
-        if (equivalenceIndex != nil) {
+        if equivalenceIndex != nil {
             self = .equivalence(lhs: lhs, rhs: rhs)
             return
         }
@@ -432,3 +434,5 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
     // swiftlint:enable cyclomatic_complexity
 
 }
+
+// swiftlint:enable type_body_length

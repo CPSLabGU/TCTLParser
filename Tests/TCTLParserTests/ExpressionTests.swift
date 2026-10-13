@@ -322,8 +322,6 @@ final class ExpressionTests: XCTestCase {
         )
     }
 
-    // swiftlint:enable function_body_length
-
     /// Test complex raw values in `init(rawValue:)`.
     func testComplexRawValueInit() {
         XCTAssertEqual(
@@ -383,8 +381,6 @@ final class ExpressionTests: XCTestCase {
             )
         )
     }
-
-    // swiftlint:disable function_body_length
 
     /// Test `init(rawValue:)` for logic operations.
     func testLogicalRawValueInit() {
@@ -467,8 +463,6 @@ final class ExpressionTests: XCTestCase {
         )
     }
 
-    // swiftlint:enable function_body_length
-
     /// Test that invalid `rawValue` returns `nil`.
     func testInvalidRawValue() {
         XCTAssertNil(TCTLParser.Expression(rawValue: "recoveryMode == '1'"))
@@ -524,6 +518,8 @@ final class ExpressionTests: XCTestCase {
         XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' V b == '1'"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "(a = '1') => b == '1'"))
     }
+
+    // swiftlint:enable function_body_length
 
     /// Test init(binaryOperation:,lhs:,rhs:).
     func testBinaryOperationInit() {
