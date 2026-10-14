@@ -10,10 +10,10 @@ A `TCTL` parser written in [swift](https://www.swift.org).
 
 ## Supported Platforms
 
-- Swift 5.7 or later.
-- MacOS 14 or later (earlier versions should be compatible, provided they support Swift 5.7).
-- Linux (Ubuntu 22.04 or later).
-- Windows 10 or later.
+- Swift 6.0 or later.
+- MacOS 26 or later (earlier versions should be compatible, provided they support Swift 6.0).
+- Linux (Ubuntu 24.04 or later).
+- Windows 11 or later.
 - Windows Server Edition 2022 or later.
 
 ## Depending on the Parser in Swift Projects
@@ -21,7 +21,7 @@ A `TCTL` parser written in [swift](https://www.swift.org).
 To use this parser, please place it as a dependency within your package manifest.
 
 ```swift
-// swift-tools-version: 5.7
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -37,7 +37,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/cpslabgu/TCTLParser.git", from: "2.0.0")
+        .package(url: "https://github.com/cpslabgu/TCTLParser.git", from: "3.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
