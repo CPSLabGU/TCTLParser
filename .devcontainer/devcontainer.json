@@ -23,7 +23,10 @@
 			"settings": {
 				"swift.path": "/usr/bin",
 				"editor.inlayHints.enabled": "offUnlessPressed",
-				"editor.formatOnSave": true
+				"editor.formatOnSave": true,
+				"[swift]": {
+					"editor.defaultFormatter": "swiftlang.swift-vscode"
+				}
 			}
 		}
 	}
