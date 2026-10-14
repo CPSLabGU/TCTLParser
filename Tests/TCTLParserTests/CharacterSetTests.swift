@@ -54,25 +54,28 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-import XCTest
+import Testing
 
 @testable import TCTLParser
 
 /// Test class for `CharacterSet` extensions.
-final class CharacterSetTests: XCTestCase {
+@Suite("CharacterSet Tests")
+struct CharacterSetTests {
 
     /// Test new character sets contain the correct characters.
+    @Test("Test new character sets contain the correct characters.")
     func testConstants() {
-        XCTAssertEqual(CharacterSet.alphanumerics.intersection(.globalQuantifiers), ["A", "E"])
-        XCTAssertEqual(
-            CharacterSet.alphanumerics.intersection(.pathQuantifiers), ["F", "G", "U", "W", "X"])
+        #expect(CharacterSet.alphanumerics.intersection(.globalQuantifiers) == ["A", "E"])
+        #expect(
+            CharacterSet.alphanumerics.intersection(.pathQuantifiers) == ["F", "G", "U", "W", "X"])
     }
 
     /// Test the contains method on characters.
+    @Test("Test the contains method on characters.")
     func testContains() {
-        XCTAssertTrue(CharacterSet.pathQuantifiers.contains(character: "X"))
-        XCTAssertFalse(CharacterSet.pathQuantifiers.contains(character: "A"))
-        XCTAssertFalse(CharacterSet.pathQuantifiers.contains(character: "x"))
+        #expect(CharacterSet.pathQuantifiers.contains(character: "X"))
+        #expect(!CharacterSet.pathQuantifiers.contains(character: "A"))
+        #expect(!CharacterSet.pathQuantifiers.contains(character: "x"))
     }
 
 }

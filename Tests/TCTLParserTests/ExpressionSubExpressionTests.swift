@@ -53,23 +53,25 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Testing
 import VHDLParsing
-import XCTest
 
 @testable import TCTLParser
 
 /// Test class for sub-expressions within an expression.
-final class ExpressionSubExpressionTests: XCTestCase {
+@Suite("Expression Sub-Expression Tests")
+struct ExpressionSubExpressionTests {
 
     // swiftlint:disable function_body_length
 
     /// Test sub-quantified expressions are parsed correctly.
+    @Test
     func testSubExpression() {
         guard
             let operationalMode = VariableName(rawValue: "operationalMode"),
             let bootMode = VariableName(rawValue: "bootMode")
         else {
-            XCTFail("Incorrect variables names!")
+            Issue.record("Incorrect variables names!")
             return
         }
         let expected = Expression.quantified(
@@ -148,24 +150,25 @@ final class ExpressionSubExpressionTests: XCTestCase {
                 )
             )
         )
-        XCTAssertEqual(
+        #expect(
             Expression(
                 rawValue:
-                    "A X A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'"),
-            expected
+                    "A X A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'")
+                == expected
         )
-        XCTAssertEqual(
+        #expect(
             Expression(
                 rawValue:
                     "A X A G operationalMode = \'1\' -> E operationalMode = \'1\' U bootMode = \'1\'"
-            ),
-            expected
+            )
+                == expected
         )
     }
 
     // swiftlint:enable function_body_length
 
     /// Test that negation works before a language expression.
+    @Test
     func testNegationInLanguage() {
         let falseExp = Expression.language(
             expression: .vhdl(
@@ -181,10 +184,11 @@ final class ExpressionSubExpressionTests: XCTestCase {
                 )
             )
         )
-        XCTAssertEqual(Expression(rawValue: "A G !false"), expected)
+        #expect(Expression(rawValue: "A G !false") == expected)
     }
 
     /// Test that negation works for sub-expressions.
+    @Test
     func testNegationInSubExpression() {
         let falseExp = Expression.language(
             expression: .vhdl(
@@ -202,7 +206,7 @@ final class ExpressionSubExpressionTests: XCTestCase {
                 )
             )
         )
-        XCTAssertEqual(Expression(rawValue: "!A G !false"), expected)
+        #expect(Expression(rawValue: "!A G !false") == expected)
     }
 
 }

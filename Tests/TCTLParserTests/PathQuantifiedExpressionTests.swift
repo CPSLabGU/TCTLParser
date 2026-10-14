@@ -53,13 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Testing
 import VHDLParsing
-import XCTest
 
 @testable import TCTLParser
 
 /// Test class for ``PathQuantifiedExpression``.
-final class PathQuantifiedExpressionTests: XCTestCase {
+@Suite("Path Quantified Expression Tests")
+struct PathQuantifiedExpressionTests {
 
     /// The raw value of the test expression.
     let globalRawValue = "G recoveryMode = '1'"
@@ -129,106 +130,112 @@ final class PathQuantifiedExpressionTests: XCTestCase {
     }
 
     /// Test that the `rawValue` is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(globalExpression.rawValue, globalRawValue)
-        XCTAssertEqual(nextExpression.rawValue, nextRawValue)
-        XCTAssertEqual(finalExpression.rawValue, finalRawValue)
-        XCTAssertEqual(untilExpression.rawValue, "\(lhsRawValue) U \(rhsRawValue)")
-        XCTAssertEqual(weakExpression.rawValue, "\(lhsRawValue) W \(rhsRawValue)")
+        #expect(globalExpression.rawValue == globalRawValue)
+        #expect(nextExpression.rawValue == nextRawValue)
+        #expect(finalExpression.rawValue == finalRawValue)
+        #expect(untilExpression.rawValue == "\(lhsRawValue) U \(rhsRawValue)")
+        #expect(weakExpression.rawValue == "\(lhsRawValue) W \(rhsRawValue)")
     }
 
     /// Test that the `init?(rawValue:)` initializer works correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: globalRawValue), globalExpression)
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: nextRawValue), nextExpression)
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: finalRawValue), finalExpression)
-        XCTAssertEqual(
-            PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)"), untilExpression)
-        XCTAssertEqual(
-            PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)"), weakExpression)
-        XCTAssertEqual(
-            PathQuantifiedExpression(rawValue: "\(lhsRawValue)\nU\n\(rhsRawValue)"),
-            untilExpression
+        #expect(PathQuantifiedExpression(rawValue: globalRawValue) == globalExpression)
+        #expect(PathQuantifiedExpression(rawValue: nextRawValue) == nextExpression)
+        #expect(PathQuantifiedExpression(rawValue: finalRawValue) == finalExpression)
+        #expect(
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)") == untilExpression
+        )
+        #expect(
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)") == weakExpression)
+        #expect(
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue)\nU\n\(rhsRawValue)")
+                == untilExpression
         )
     }
 
     /// Test that the `init(rawValue:)` detects invalid raw values.
+    @Test
     func testInvalidRawValue() {
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "GrecoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "G recoveryMode == '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "G G recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: ""))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "U"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "W"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1' U"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1' W"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "U recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "W recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: " U recoveryMode = '1' "))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "recoveryMode = '1' U "))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "failureCount == 3 U recoveryMode = '1'"))
-        XCTAssertNil(PathQuantifiedExpression(rawValue: "failureCount = 3 U recoveryMode == '1'"))
+        #expect(PathQuantifiedExpression(rawValue: "recoveryMode = '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "GrecoveryMode = '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "G recoveryMode == '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "G G recoveryMode = '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "U") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "W") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "recoveryMode = '1' U") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "recoveryMode = '1' W") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "U recoveryMode = '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "W recoveryMode = '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: " U recoveryMode = '1' ") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "recoveryMode = '1' U ") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "failureCount == 3 U recoveryMode = '1'") == nil)
+        #expect(PathQuantifiedExpression(rawValue: "failureCount = 3 U recoveryMode == '1'") == nil)
     }
 
     /// Test `expression` computed property.
+    @Test
     func testExpression() {
-        XCTAssertEqual(globalExpression.expression, subExpression)
-        XCTAssertEqual(nextExpression.expression, subExpression)
-        XCTAssertEqual(finalExpression.expression, subExpression)
-        XCTAssertNil(untilExpression.expression)
-        XCTAssertNil(weakExpression.expression)
+        #expect(globalExpression.expression == subExpression)
+        #expect(nextExpression.expression == subExpression)
+        #expect(finalExpression.expression == subExpression)
+        #expect(untilExpression.expression == nil)
+        #expect(weakExpression.expression == nil)
     }
 
     /// Test `lhs` computed propery.
+    @Test
     func testLHS() {
-        XCTAssertEqual(untilExpression.lhs, lhs)
-        XCTAssertEqual(weakExpression.lhs, lhs)
-        XCTAssertNil(globalExpression.lhs)
-        XCTAssertNil(nextExpression.lhs)
-        XCTAssertNil(finalExpression.lhs)
+        #expect(untilExpression.lhs == lhs)
+        #expect(weakExpression.lhs == lhs)
+        #expect(globalExpression.lhs == nil)
+        #expect(nextExpression.lhs == nil)
+        #expect(finalExpression.lhs == nil)
     }
 
     /// Test `rhs` computed property.
+    @Test
     func testRHS() {
-        XCTAssertEqual(untilExpression.rhs, rhs)
-        XCTAssertEqual(weakExpression.rhs, rhs)
-        XCTAssertNil(globalExpression.rhs)
-        XCTAssertNil(nextExpression.rhs)
-        XCTAssertNil(finalExpression.rhs)
+        #expect(untilExpression.rhs == rhs)
+        #expect(weakExpression.rhs == rhs)
+        #expect(globalExpression.rhs == nil)
+        #expect(nextExpression.rhs == nil)
+        #expect(finalExpression.rhs == nil)
     }
 
     /// Test that unary init.
+    @Test
     func testUnaryInit() {
-        XCTAssertEqual(
-            PathQuantifiedExpression(unaryQuantifier: "G", expression: subExpression),
-            globalExpression
-        )
-        XCTAssertEqual(
-            PathQuantifiedExpression(unaryQuantifier: "X", expression: subExpression),
-            nextExpression
-        )
-        XCTAssertEqual(
-            PathQuantifiedExpression(unaryQuantifier: "F", expression: subExpression),
-            finalExpression
-        )
-        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "U", expression: subExpression))
-        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "W", expression: subExpression))
-        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "A", expression: subExpression))
-        XCTAssertNil(PathQuantifiedExpression(unaryQuantifier: "E", expression: subExpression))
+        #expect(
+            PathQuantifiedExpression(unaryQuantifier: "G", expression: subExpression)
+                == globalExpression)
+        #expect(
+            PathQuantifiedExpression(unaryQuantifier: "X", expression: subExpression)
+                == nextExpression)
+        #expect(
+            PathQuantifiedExpression(unaryQuantifier: "F", expression: subExpression)
+                == finalExpression)
+        #expect(PathQuantifiedExpression(unaryQuantifier: "U", expression: subExpression) == nil)
+        #expect(PathQuantifiedExpression(unaryQuantifier: "W", expression: subExpression) == nil)
+        #expect(PathQuantifiedExpression(unaryQuantifier: "A", expression: subExpression) == nil)
+        #expect(PathQuantifiedExpression(unaryQuantifier: "E", expression: subExpression) == nil)
     }
 
     /// Test the binary init.
+    @Test
     func testBinaryInit() {
-        XCTAssertEqual(
-            PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs), untilExpression)
-        XCTAssertEqual(
-            PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs), weakExpression)
-        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "G", lhs: lhs, rhs: rhs))
-        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "X", lhs: lhs, rhs: rhs))
-        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "F", lhs: lhs, rhs: rhs))
-        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "A", lhs: lhs, rhs: rhs))
-        XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "E", lhs: lhs, rhs: rhs))
+        #expect(
+            PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs) == untilExpression)
+        #expect(
+            PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs) == weakExpression)
+        #expect(PathQuantifiedExpression(binaryQuantifier: "G", lhs: lhs, rhs: rhs) == nil)
+        #expect(PathQuantifiedExpression(binaryQuantifier: "X", lhs: lhs, rhs: rhs) == nil)
+        #expect(PathQuantifiedExpression(binaryQuantifier: "F", lhs: lhs, rhs: rhs) == nil)
+        #expect(PathQuantifiedExpression(binaryQuantifier: "A", lhs: lhs, rhs: rhs) == nil)
+        #expect(PathQuantifiedExpression(binaryQuantifier: "E", lhs: lhs, rhs: rhs) == nil)
     }
 
 }
