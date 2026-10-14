@@ -233,13 +233,17 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         guard secondHalfRaw.hasPrefix("_") else {
             return nil
         }
-        let withoutUnderscore = secondHalfRaw.dropFirst().trimmingCharacters(
-            in: .whitespacesAndNewlines)
+        let withoutUnderscore = secondHalfRaw.dropFirst()
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
         guard withoutUnderscore.hasPrefix("{") else {
             return nil
         }
-        let withoutStart = withoutUnderscore.dropFirst().trimmingCharacters(
-            in: .whitespacesAndNewlines)
+        let withoutStart = withoutUnderscore.dropFirst()
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
         guard let terminationIndex2 = withoutStart.firstIndex(of: "}") else {
             return nil
         }
@@ -280,7 +284,10 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return nil
         }
         self.init(
-            binaryOperation: String(first), lhs: .constrained(expression: expression), rhs: rhs)
+            binaryOperation: String(first),
+            lhs: .constrained(expression: expression),
+            rhs: rhs
+        )
     }
 
     /// Try and initialise an `Expression` where the first character is an open-bracket.
@@ -307,9 +314,12 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         guard lastIndex == rawValue.index(before: rawValue.endIndex).utf16Offset(in: rawValue)
         else {
             let remainingStart = rawValue.index(
-                after: String.Index(utf16Offset: lastIndex, in: rawValue))
-            let remainingRaw = rawValue[remainingStart...].trimmingCharacters(
-                in: .whitespacesAndNewlines)
+                after: String.Index(utf16Offset: lastIndex, in: rawValue)
+            )
+            let remainingRaw = rawValue[remainingStart...]
+                .trimmingCharacters(
+                    in: .whitespacesAndNewlines
+                )
             guard
                 remainingRaw.count > 2,
                 let first = remainingRaw.first,

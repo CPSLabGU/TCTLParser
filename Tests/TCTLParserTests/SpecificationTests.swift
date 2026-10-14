@@ -102,7 +102,8 @@ struct SpecificationTests {
                                     value: .equality(
                                         lhs: .reference(
                                             variable: .variable(
-                                                reference: .variable(name: .recoveryMode))
+                                                reference: .variable(name: .recoveryMode)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -121,7 +122,8 @@ struct SpecificationTests {
                                     value: .equality(
                                         lhs: .reference(
                                             variable: .variable(
-                                                reference: .variable(name: .failureCount))
+                                                reference: .variable(name: .failureCount)
+                                            )
                                         ),
                                         rhs: .literal(value: .integer(value: 3))
                                     )
@@ -164,37 +166,45 @@ struct SpecificationTests {
             Specification(
                 rawValue:
                     "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue:
                     "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue: "// spec:language VHDLA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue:
                     "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue: "A G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue: "// spec:language none\n\n"
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue: ""
-            ) == nil)
+            ) == nil
+        )
         #expect(
             Specification(
                 rawValue: "//"
-            ) == nil)
+            ) == nil
+        )
     }
 
     // swiftlint:disable line_length

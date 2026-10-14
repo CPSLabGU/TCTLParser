@@ -75,7 +75,8 @@ struct GloballyQuantifiedExpressionTests {
                 expression: .comparison(
                     value: .equality(
                         lhs: .reference(
-                            variable: .variable(reference: .variable(name: .recoveryMode))),
+                            variable: .variable(reference: .variable(name: .recoveryMode))
+                        ),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -118,10 +119,12 @@ struct GloballyQuantifiedExpressionTests {
         #expect(GloballyQuantifiedExpression(rawValue: "A G A E recoveryMode = '1'") == nil)
         #expect(
             GloballyQuantifiedExpression(rawValue: "A G recoveryMode = '1' U failureCount = 3")
-                == nil)
+                == nil
+        )
         #expect(
             GloballyQuantifiedExpression(rawValue: "A G A G recoveryMode = '1' U failureCount = 3")
-                == nil)
+                == nil
+        )
     }
 
     /// Test `init(quantifier:, expression:)` correctly initializes the globally quantified expression.

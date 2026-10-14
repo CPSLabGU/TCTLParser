@@ -95,7 +95,8 @@ struct ExpressionTests {
                 expression: .comparison(
                     value: .equality(
                         lhs: .reference(
-                            variable: .variable(reference: .variable(name: .failureCount))),
+                            variable: .variable(reference: .variable(name: .failureCount))
+                        ),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -106,7 +107,8 @@ struct ExpressionTests {
                 expression: .comparison(
                     value: .equality(
                         lhs: .reference(
-                            variable: .variable(reference: .variable(name: .recoveryMode))),
+                            variable: .variable(reference: .variable(name: .recoveryMode))
+                        ),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -121,7 +123,8 @@ struct ExpressionTests {
                 expression: .comparison(
                     value: .equality(
                         lhs: .reference(
-                            variable: .variable(reference: .variable(name: .failureCount))),
+                            variable: .variable(reference: .variable(name: .failureCount))
+                        ),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -132,7 +135,8 @@ struct ExpressionTests {
                 expression: .comparison(
                     value: .equality(
                         lhs: .reference(
-                            variable: .variable(reference: .variable(name: .recoveryMode))),
+                            variable: .variable(reference: .variable(name: .recoveryMode))
+                        ),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -147,7 +151,8 @@ struct ExpressionTests {
                 expression: .comparison(
                     value: .equality(
                         lhs: .reference(
-                            variable: .variable(reference: .variable(name: .failureCount))),
+                            variable: .variable(reference: .variable(name: .failureCount))
+                        ),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -163,7 +168,8 @@ struct ExpressionTests {
                                     value: .equality(
                                         lhs: .reference(
                                             variable: .variable(
-                                                reference: .variable(name: .recoveryMode))
+                                                reference: .variable(name: .recoveryMode)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -176,7 +182,8 @@ struct ExpressionTests {
                                     value: .equality(
                                         lhs: .reference(
                                             variable: .variable(
-                                                reference: .variable(name: .finished))
+                                                reference: .variable(name: .finished)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -201,7 +208,8 @@ struct ExpressionTests {
                                     value: .equality(
                                         lhs: .reference(
                                             variable: .variable(
-                                                reference: .variable(name: .recoveryMode))
+                                                reference: .variable(name: .recoveryMode)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -236,7 +244,8 @@ struct ExpressionTests {
                 == "\(rawValue) V \(impliesRawValue)"
         )
         #expect(
-            constrainedExpression.rawValue == "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
+            constrainedExpression.rawValue == "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
+        )
     }
 
     // swiftlint:disable function_body_length
@@ -262,7 +271,8 @@ struct ExpressionTests {
                             expression: .comparison(
                                 value: .equality(
                                     lhs: .reference(
-                                        variable: .variable(reference: .variable(name: .finished))),
+                                        variable: .variable(reference: .variable(name: .finished))
+                                    ),
                                     rhs: .literal(value: .bit(value: .high))
                                 )
                             )
@@ -281,7 +291,8 @@ struct ExpressionTests {
                                         value: .equality(
                                             lhs: .reference(
                                                 variable: .variable(
-                                                    reference: .variable(name: .failureCount))
+                                                    reference: .variable(name: .failureCount)
+                                                )
                                             ),
                                             rhs: .literal(value: .integer(value: 3))
                                         )
@@ -294,7 +305,8 @@ struct ExpressionTests {
                                         value: .equality(
                                             lhs: .reference(
                                                 variable: .variable(
-                                                    reference: .variable(name: .finished))
+                                                    reference: .variable(name: .finished)
+                                                )
                                             ),
                                             rhs: .literal(value: .bit(value: .high))
                                         )
@@ -316,7 +328,8 @@ struct ExpressionTests {
                                         value: .equality(
                                             lhs: .reference(
                                                 variable: .variable(
-                                                    reference: .variable(name: .failureCount))
+                                                    reference: .variable(name: .failureCount)
+                                                )
                                             ),
                                             rhs: .literal(value: .integer(value: 3))
                                         )
@@ -347,16 +360,19 @@ struct ExpressionTests {
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}")
+                rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}"
+            )
                 == .constrained(
                     expression: ConstrainedExpression(
                         expression: .always(
-                            expression: .finally(expression: equivalenceExpression)),
+                            expression: .finally(expression: equivalenceExpression)
+                        ),
                         constraints: [
                             .lessThan(constraint: .time(amount: 100, unit: .ns)),
                             .lessThan(constraint: .energy(amount: 200, unit: .mJ)),
                         ]
-                    ))
+                    )
+                )
         )
         #expect(
             TCTLParser.Expression(
@@ -426,7 +442,8 @@ struct ExpressionTests {
                         expression: .comparison(
                             value: .equality(
                                 lhs: .reference(
-                                    variable: .variable(reference: .variable(name: $0))),
+                                    variable: .variable(reference: .variable(name: $0))
+                                ),
                                 rhs: .literal(value: .bit(value: .high))
                             )
                         )
@@ -459,7 +476,8 @@ struct ExpressionTests {
             TCTLParser.Expression(rawValue: "!(a = '1' ^ b = '1') V c = '1'")
                 == .disjunction(
                     lhs: .not(
-                        expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))),
+                        expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))
+                    ),
                     rhs: f(.c)
                 )
         )
@@ -468,7 +486,9 @@ struct ExpressionTests {
                 == .conjunction(
                     lhs: f(.a),
                     rhs: .disjunction(
-                        lhs: f(.b), rhs: .not(expression: .precedence(expression: f(.c))))
+                        lhs: f(.b),
+                        rhs: .not(expression: .precedence(expression: f(.c)))
+                    )
                 )
         )
         #expect(
@@ -483,7 +503,9 @@ struct ExpressionTests {
                 == .conjunction(
                     lhs: f(.a),
                     rhs: .disjunction(
-                        lhs: .not(expression: .precedence(expression: f(.b))), rhs: f(.c))
+                        lhs: .not(expression: .precedence(expression: f(.b))),
+                        rhs: f(.c)
+                    )
                 )
         )
     }
@@ -500,31 +522,38 @@ struct ExpressionTests {
         #expect(TCTLParser.Expression(rawValue: "failureCount == 3 -> recoveryMode = '1'") == nil)
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'") == nil
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'"
+            ) == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'") == nil
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'"
+            ) == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'") == nil
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'"
+            ) == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> A S recoveryMode = '1' -> finished = '1'") == nil
+                rawValue: "failureCount = 3 -> A S recoveryMode = '1' -> finished = '1'"
+            ) == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> A recoveryMode = '1' -> finished = '1'") == nil
+                rawValue: "failureCount = 3 -> A recoveryMode = '1' -> finished = '1'"
+            ) == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'") == nil
+                rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'"
+            ) == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'") == nil
+                rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'"
+            ) == nil
         )
         #expect(TCTLParser.Expression(rawValue: "()") == nil)
         #expect(TCTLParser.Expression(precedence: rawValue) == nil)
@@ -574,47 +603,60 @@ struct ExpressionTests {
                 == .equivalence(lhs: vhdl, rhs: equivalenceExpression)
         )
         #expect(
-            TCTLParser.Expression(binaryOperation: "v", lhs: vhdl, rhs: impliesExpression) == nil)
+            TCTLParser.Expression(binaryOperation: "v", lhs: vhdl, rhs: impliesExpression) == nil
+        )
     }
 
     /// Test `init(rawValue:)` for invalid constrained expressions.
     @Test
     func testInvalidConstrainedRawValue() {
         #expect(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'_{t < 100 ns, E < 200 mJ}") == nil)
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'_{t < 100 ns, E < 200 mJ}") == nil
+        )
         #expect(
             TCTLParser.Expression(rawValue: "{recoveryMode! = '1'}_{t < 100 ns, E < 200 mJ}") == nil
         )
         #expect(
             TCTLParser.Expression(
-                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} and x = '1'") == nil)
+                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} and x = '1'"
+            ) == nil
+        )
         #expect(
             TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns,, E < 200 mJ}") == nil
         )
         #expect(
             TCTLParser.Expression(rawValue: "{A G {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}")
-                == nil)
+                == nil
+        )
         #expect(
             TCTLParser.Expression(constrained: "recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
-                == nil)
+                == nil
+        )
         #expect(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}{t < 100 ns, E < 200 mJ}") == nil)
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}{t < 100 ns, E < 200 mJ}") == nil
+        )
         #expect(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_t < 100 ns, E < 200 mJ}") == nil)
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_t < 100 ns, E < 200 mJ}") == nil
+        )
         #expect(
             TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns, E < 200 mJ}}")
-                == nil)
+                == nil
+        )
         #expect(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ") == nil)
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ") == nil
+        )
         #expect(
             TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> ><>")
-                == nil)
+                == nil
+        )
         #expect(
             TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ ><>")
-                == nil)
+                == nil
+        )
         #expect(
             TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns}, E < 200 mJ}")
-                == nil)
+                == nil
+        )
     }
 
 }

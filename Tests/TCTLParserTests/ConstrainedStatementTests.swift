@@ -133,9 +133,11 @@ struct ConstrainedStatementTests {
                 == notEqual
         )
         #expect(
-            ConstrainedStatement(symbol: "E", operation: "<", constraint: timeConstraint) == nil)
+            ConstrainedStatement(symbol: "E", operation: "<", constraint: timeConstraint) == nil
+        )
         #expect(
-            ConstrainedStatement(symbol: "t", operation: "<<", constraint: timeConstraint) == nil)
+            ConstrainedStatement(symbol: "t", operation: "<<", constraint: timeConstraint) == nil
+        )
     }
 
     /// Test the `init(rawValue:)` parses the raw value correctly.

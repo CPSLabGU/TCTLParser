@@ -100,14 +100,18 @@ struct ConstrainedExpressionTests {
     func testRawValueInit() {
         #expect(
             ConstrainedExpression(rawValue: "{A F true}_{t < 100 ns, E < 200 mJ}")
-                == constrainedExpression)
+                == constrainedExpression
+        )
         #expect(
             ConstrainedExpression(rawValue: "\n{\nA F true\n}_{\nt\n<\n100\nns,\nE\n<\n200\nmJ}")
-                == constrainedExpression)
+                == constrainedExpression
+        )
         #expect(
             ConstrainedExpression(
-                rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}")
-                == constrainedExpression)
+                rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"
+            )
+                == constrainedExpression
+        )
     }
 
     /// Test that `init(rawValue:)` detects invalid raw values.

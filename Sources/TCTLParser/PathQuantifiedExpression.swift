@@ -220,7 +220,8 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
                     let charBefore = rawValue[..<range.lowerBound].last,
                     CharacterSet.whitespacesAndNewlines.contains(character: charBefore),
                     CharacterSet.whitespacesAndNewlines.contains(
-                        character: rawValue[range.upperBound])
+                        character: rawValue[range.upperBound]
+                    )
                 else {
                     return nil
                 }
@@ -232,8 +233,10 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
         else {
             return nil
         }
-        let firstQuantifier = rawValue[firstQuantifierIndex].trimmingCharacters(
-            in: .whitespacesAndNewlines)
+        let firstQuantifier = rawValue[firstQuantifierIndex]
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
         let quantifierChar = firstQuantifier[firstQuantifier.startIndex]
         let lhsRaw = rawValue[..<firstQuantifierIndex.lowerBound]
             .trimmingCharacters(in: .whitespacesAndNewlines)

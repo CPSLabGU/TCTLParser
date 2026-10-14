@@ -67,7 +67,8 @@ struct CharacterSetTests {
     func testConstants() {
         #expect(CharacterSet.alphanumerics.intersection(.globalQuantifiers) == ["A", "E"])
         #expect(
-            CharacterSet.alphanumerics.intersection(.pathQuantifiers) == ["F", "G", "U", "W", "X"])
+            CharacterSet.alphanumerics.intersection(.pathQuantifiers) == ["F", "G", "U", "W", "X"]
+        )
     }
 
     /// Test the contains method on characters.

@@ -149,7 +149,8 @@ struct PathQuantifiedExpressionTests {
             PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)") == untilExpression
         )
         #expect(
-            PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)") == weakExpression)
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)") == weakExpression
+        )
         #expect(
             PathQuantifiedExpression(rawValue: "\(lhsRawValue)\nU\n\(rhsRawValue)")
                 == untilExpression
@@ -211,13 +212,16 @@ struct PathQuantifiedExpressionTests {
     func testUnaryInit() {
         #expect(
             PathQuantifiedExpression(unaryQuantifier: "G", expression: subExpression)
-                == globalExpression)
+                == globalExpression
+        )
         #expect(
             PathQuantifiedExpression(unaryQuantifier: "X", expression: subExpression)
-                == nextExpression)
+                == nextExpression
+        )
         #expect(
             PathQuantifiedExpression(unaryQuantifier: "F", expression: subExpression)
-                == finalExpression)
+                == finalExpression
+        )
         #expect(PathQuantifiedExpression(unaryQuantifier: "U", expression: subExpression) == nil)
         #expect(PathQuantifiedExpression(unaryQuantifier: "W", expression: subExpression) == nil)
         #expect(PathQuantifiedExpression(unaryQuantifier: "A", expression: subExpression) == nil)
@@ -228,9 +232,11 @@ struct PathQuantifiedExpressionTests {
     @Test
     func testBinaryInit() {
         #expect(
-            PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs) == untilExpression)
+            PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs) == untilExpression
+        )
         #expect(
-            PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs) == weakExpression)
+            PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs) == weakExpression
+        )
         #expect(PathQuantifiedExpression(binaryQuantifier: "G", lhs: lhs, rhs: rhs) == nil)
         #expect(PathQuantifiedExpression(binaryQuantifier: "X", lhs: lhs, rhs: rhs) == nil)
         #expect(PathQuantifiedExpression(binaryQuantifier: "F", lhs: lhs, rhs: rhs) == nil)

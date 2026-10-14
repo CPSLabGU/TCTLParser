@@ -89,7 +89,8 @@ struct ExpressionSubExpressionTests {
                                                         lhs: .reference(
                                                             variable: .variable(
                                                                 reference: .variable(
-                                                                    name: operationalMode)
+                                                                    name: operationalMode
+                                                                )
                                                             )
                                                         ),
                                                         rhs: .literal(value: .bit(value: .high))
@@ -115,7 +116,8 @@ struct ExpressionSubExpressionTests {
                                                                         )
                                                                     ),
                                                                     rhs: .literal(
-                                                                        value: .bit(value: .high))
+                                                                        value: .bit(value: .high)
+                                                                    )
                                                                 )
                                                             )
                                                         )
@@ -134,7 +136,8 @@ struct ExpressionSubExpressionTests {
                                                                         )
                                                                     ),
                                                                     rhs: .literal(
-                                                                        value: .bit(value: .high))
+                                                                        value: .bit(value: .high)
+                                                                    )
                                                                 )
                                                             )
                                                         )
@@ -153,7 +156,8 @@ struct ExpressionSubExpressionTests {
         #expect(
             Expression(
                 rawValue:
-                    "A X A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'")
+                    "A X A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'"
+            )
                 == expected
         )
         #expect(
