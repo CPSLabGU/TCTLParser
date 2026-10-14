@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``ConstrainedExpression``.
 final class ConstrainedExpressionTests: XCTestCase {
@@ -102,7 +103,8 @@ final class ConstrainedExpressionTests: XCTestCase {
             constrainedExpression
         )
         XCTAssertEqual(
-            ConstrainedExpression(rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
+            ConstrainedExpression(
+                rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
             constrainedExpression
         )
     }

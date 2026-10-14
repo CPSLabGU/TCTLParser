@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for sub-expressions within an expression.
 final class ExpressionSubExpressionTests: XCTestCase {
@@ -85,7 +86,8 @@ final class ExpressionSubExpressionTests: XCTestCase {
                                                     value: .equality(
                                                         lhs: .reference(
                                                             variable: .variable(
-                                                                reference: .variable(name: operationalMode)
+                                                                reference: .variable(
+                                                                    name: operationalMode)
                                                             )
                                                         ),
                                                         rhs: .literal(value: .bit(value: .high))
@@ -105,11 +107,13 @@ final class ExpressionSubExpressionTests: XCTestCase {
                                                                     lhs: .reference(
                                                                         variable: .variable(
                                                                             reference: .variable(
-                                                                                name: operationalMode
+                                                                                name:
+                                                                                    operationalMode
                                                                             )
                                                                         )
                                                                     ),
-                                                                    rhs: .literal(value: .bit(value: .high))
+                                                                    rhs: .literal(
+                                                                        value: .bit(value: .high))
                                                                 )
                                                             )
                                                         )
@@ -127,7 +131,8 @@ final class ExpressionSubExpressionTests: XCTestCase {
                                                                             )
                                                                         )
                                                                     ),
-                                                                    rhs: .literal(value: .bit(value: .high))
+                                                                    rhs: .literal(
+                                                                        value: .bit(value: .high))
                                                                 )
                                                             )
                                                         )
@@ -144,12 +149,15 @@ final class ExpressionSubExpressionTests: XCTestCase {
             )
         )
         XCTAssertEqual(
-            Expression(rawValue: "A X A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'"),
+            Expression(
+                rawValue:
+                    "A X A G operationalMode = '1' -> E operationalMode = '1' U bootMode = '1'"),
             expected
         )
         XCTAssertEqual(
             Expression(
-                rawValue: "A X A G operationalMode = \'1\' -> E operationalMode = \'1\' U bootMode = \'1\'"
+                rawValue:
+                    "A X A G operationalMode = \'1\' -> E operationalMode = \'1\' U bootMode = \'1\'"
             ),
             expected
         )

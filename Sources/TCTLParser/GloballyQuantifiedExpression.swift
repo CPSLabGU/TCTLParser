@@ -58,7 +58,9 @@ import Foundation
 /// An expression that is globally quantified.
 ///
 /// These types of expressions apply to all branches extending from the current state.
-public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable,
+    Sendable
+{
 
     /// The expression must hold on all paths extending from the current state.
     ///
@@ -94,7 +96,8 @@ public indirect enum GloballyQuantifiedExpression: RawRepresentable, Equatable, 
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard
-            let firstChar = trimmedString.first, CharacterSet.globalQuantifiers.contains(character: firstChar)
+            let firstChar = trimmedString.first,
+            CharacterSet.globalQuantifiers.contains(character: firstChar)
         else {
             return nil
         }

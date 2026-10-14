@@ -54,8 +54,9 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import Foundation
-@testable import TCTLParser
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for `CharacterSet` extensions.
 final class CharacterSetTests: XCTestCase {
@@ -63,7 +64,8 @@ final class CharacterSetTests: XCTestCase {
     /// Test new character sets contain the correct characters.
     func testConstants() {
         XCTAssertEqual(CharacterSet.alphanumerics.intersection(.globalQuantifiers), ["A", "E"])
-        XCTAssertEqual(CharacterSet.alphanumerics.intersection(.pathQuantifiers), ["F", "G", "U", "W", "X"])
+        XCTAssertEqual(
+            CharacterSet.alphanumerics.intersection(.pathQuantifiers), ["F", "G", "U", "W", "X"])
     }
 
     /// Test the contains method on characters.

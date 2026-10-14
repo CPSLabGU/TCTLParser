@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``PathQuantifiedExpression``.
 final class PathQuantifiedExpressionTests: XCTestCase {
@@ -141,8 +142,10 @@ final class PathQuantifiedExpressionTests: XCTestCase {
         XCTAssertEqual(PathQuantifiedExpression(rawValue: globalRawValue), globalExpression)
         XCTAssertEqual(PathQuantifiedExpression(rawValue: nextRawValue), nextExpression)
         XCTAssertEqual(PathQuantifiedExpression(rawValue: finalRawValue), finalExpression)
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)"), untilExpression)
-        XCTAssertEqual(PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)"), weakExpression)
+        XCTAssertEqual(
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue) U \(rhsRawValue)"), untilExpression)
+        XCTAssertEqual(
+            PathQuantifiedExpression(rawValue: "\(lhsRawValue) W \(rhsRawValue)"), weakExpression)
         XCTAssertEqual(
             PathQuantifiedExpression(rawValue: "\(lhsRawValue)\nU\n\(rhsRawValue)"),
             untilExpression
@@ -217,8 +220,10 @@ final class PathQuantifiedExpressionTests: XCTestCase {
 
     /// Test the binary init.
     func testBinaryInit() {
-        XCTAssertEqual(PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs), untilExpression)
-        XCTAssertEqual(PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs), weakExpression)
+        XCTAssertEqual(
+            PathQuantifiedExpression(binaryQuantifier: "U", lhs: lhs, rhs: rhs), untilExpression)
+        XCTAssertEqual(
+            PathQuantifiedExpression(binaryQuantifier: "W", lhs: lhs, rhs: rhs), weakExpression)
         XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "G", lhs: lhs, rhs: rhs))
         XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "X", lhs: lhs, rhs: rhs))
         XCTAssertNil(PathQuantifiedExpression(binaryQuantifier: "F", lhs: lhs, rhs: rhs))

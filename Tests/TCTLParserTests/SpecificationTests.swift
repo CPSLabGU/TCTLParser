@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``Specification``.
 final class SpecificationTests: XCTestCase {
@@ -99,7 +100,8 @@ final class SpecificationTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .recoveryMode))
+                                            variable: .variable(
+                                                reference: .variable(name: .recoveryMode))
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -117,7 +119,8 @@ final class SpecificationTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .failureCount))
+                                            variable: .variable(
+                                                reference: .variable(name: .failureCount))
                                         ),
                                         rhs: .literal(value: .integer(value: 3))
                                     )
@@ -154,12 +157,14 @@ final class SpecificationTests: XCTestCase {
     func testInvalidRawValue() {
         XCTAssertNil(
             Specification(
-                rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+                rawValue:
+                    "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
             )
         )
         XCTAssertNil(
             Specification(
-                rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
+                rawValue:
+                    "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
             )
         )
         XCTAssertNil(
@@ -169,7 +174,8 @@ final class SpecificationTests: XCTestCase {
         )
         XCTAssertNil(
             Specification(
-                rawValue: "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+                rawValue:
+                    "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
             )
         )
         XCTAssertNil(

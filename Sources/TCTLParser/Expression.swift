@@ -147,7 +147,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             if prefixString.count == 1 {
                 let firstChar = prefixString[prefixString.startIndex]
                 if CharacterSet.globalQuantifiers.contains(character: firstChar) {
-                    guard let quantified = GloballyQuantifiedExpression(rawValue: trimmedString) else {
+                    guard let quantified = GloballyQuantifiedExpression(rawValue: trimmedString)
+                    else {
                         return nil
                     }
                     self = .quantified(expression: quantified)
@@ -178,7 +179,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         }
         let rhsRaw = trimmedString[trimmedString.index(after: index.upperBound)...]
         guard
-            let lhs = Expression(rawValue: String(lhsRaw)), let rhs = Expression(rawValue: String(rhsRaw))
+            let lhs = Expression(rawValue: String(lhsRaw)),
+            let rhs = Expression(rawValue: String(rhsRaw))
         else {
             return nil
         }
@@ -231,11 +233,13 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         guard secondHalfRaw.hasPrefix("_") else {
             return nil
         }
-        let withoutUnderscore = secondHalfRaw.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        let withoutUnderscore = secondHalfRaw.dropFirst().trimmingCharacters(
+            in: .whitespacesAndNewlines)
         guard withoutUnderscore.hasPrefix("{") else {
             return nil
         }
-        let withoutStart = withoutUnderscore.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        let withoutStart = withoutUnderscore.dropFirst().trimmingCharacters(
+            in: .whitespacesAndNewlines)
         guard let terminationIndex2 = withoutStart.firstIndex(of: "}") else {
             return nil
         }
@@ -266,7 +270,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             return
         }
         guard
-            let first = remaining.first, CharacterSet.binaryLogicalOperators.contains(character: first)
+            let first = remaining.first,
+            CharacterSet.binaryLogicalOperators.contains(character: first)
         else {
             return nil
         }
@@ -274,7 +279,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
         guard let rhs = Expression(rawValue: rhsRaw) else {
             return nil
         }
-        self.init(binaryOperation: String(first), lhs: .constrained(expression: expression), rhs: rhs)
+        self.init(
+            binaryOperation: String(first), lhs: .constrained(expression: expression), rhs: rhs)
     }
 
     /// Try and initialise an `Expression` where the first character is an open-bracket.
@@ -298,13 +304,17 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             }
         }
         guard currentCount == 0, lastIndex > 0 else { return nil }
-        guard lastIndex == rawValue.index(before: rawValue.endIndex).utf16Offset(in: rawValue) else {
-            let remainingStart = rawValue.index(after: String.Index(utf16Offset: lastIndex, in: rawValue))
-            let remainingRaw = rawValue[remainingStart...].trimmingCharacters(in: .whitespacesAndNewlines)
+        guard lastIndex == rawValue.index(before: rawValue.endIndex).utf16Offset(in: rawValue)
+        else {
+            let remainingStart = rawValue.index(
+                after: String.Index(utf16Offset: lastIndex, in: rawValue))
+            let remainingRaw = rawValue[remainingStart...].trimmingCharacters(
+                in: .whitespacesAndNewlines)
             guard
                 remainingRaw.count > 2,
                 let first = remainingRaw.first,
-                remainingRaw.hasPrefix("->") || CharacterSet.binaryLogicalOperators.contains(character: first)
+                remainingRaw.hasPrefix("->")
+                    || CharacterSet.binaryLogicalOperators.contains(character: first)
             else {
                 guard let language = LanguageExpression(rawValue: rawValue) else {
                     return nil
@@ -319,7 +329,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
             let operand = remainingRaw[...remainingRaw.index(after: remainingRaw.startIndex)]
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             let rhsRaw = remainingRaw.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)
-            guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw) else {
+            guard let lhs = Expression(rawValue: lhsRaw), let rhs = Expression(rawValue: rhsRaw)
+            else {
                 return nil
             }
             self.init(binaryOperation: operand, lhs: .precedence(expression: lhs), rhs: rhs)
@@ -389,7 +400,8 @@ public indirect enum Expression: RawRepresentable, Equatable, Hashable, Codable,
                         trimmedString.index(trimmedString.startIndex, offsetBy: index + 1)
                     ]
                     return CharacterSet.whitespacesAndNewlines.contains(character: before)
-                        && CharacterSet.whitespacesAndNewlines.contains(character: after) && character == "^"
+                        && CharacterSet.whitespacesAndNewlines.contains(character: after)
+                        && character == "^"
                         || character == "V"
                 })
         else {

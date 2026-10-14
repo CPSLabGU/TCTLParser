@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``LanguageExpression``.
 final class LanguageExpressionTests: XCTestCase {

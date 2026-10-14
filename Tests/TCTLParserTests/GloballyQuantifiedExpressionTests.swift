@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``GloballyQuantifiedExpression``.
 final class GloballyQuantifiedExpressionTests: XCTestCase {
@@ -72,7 +73,8 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .recoveryMode))),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -99,7 +101,8 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
     /// Test that `init(rawValue:)` correctly parses the `TCTL` expression.
     func testRawValueInit() {
         XCTAssertEqual(GloballyQuantifiedExpression(rawValue: alwaysRawValue), alwaysExpression)
-        XCTAssertEqual(GloballyQuantifiedExpression(rawValue: eventuallyRawValue), eventuallyExpression)
+        XCTAssertEqual(
+            GloballyQuantifiedExpression(rawValue: eventuallyRawValue), eventuallyExpression)
     }
 
     /// Test that `init(rawValue:)` detects invalid `TCTL`.
@@ -110,8 +113,10 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
         XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A A G recoveryMode = '1'"))
         XCTAssertNil(GloballyQuantifiedExpression(rawValue: ""))
         XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G A E recoveryMode = '1'"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G recoveryMode = '1' U failureCount = 3"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G A G recoveryMode = '1' U failureCount = 3"))
+        XCTAssertNil(
+            GloballyQuantifiedExpression(rawValue: "A G recoveryMode = '1' U failureCount = 3"))
+        XCTAssertNil(
+            GloballyQuantifiedExpression(rawValue: "A G A G recoveryMode = '1' U failureCount = 3"))
     }
 
     /// Test `init(quantifier:, expression:)` correctly initializes the globally quantified expression.

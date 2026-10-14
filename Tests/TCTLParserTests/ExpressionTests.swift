@@ -53,9 +53,10 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
 import VHDLParsing
 import XCTest
+
+@testable import TCTLParser
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -93,7 +94,8 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .failureCount))),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -103,7 +105,8 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .recoveryMode))),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -117,7 +120,8 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .failureCount))),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -127,7 +131,8 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .recoveryMode))),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -141,7 +146,8 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .failureCount))),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -156,7 +162,8 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .recoveryMode))
+                                            variable: .variable(
+                                                reference: .variable(name: .recoveryMode))
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -168,7 +175,8 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .finished))
+                                            variable: .variable(
+                                                reference: .variable(name: .finished))
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -192,7 +200,8 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .recoveryMode))
+                                            variable: .variable(
+                                                reference: .variable(name: .recoveryMode))
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -225,7 +234,8 @@ final class ExpressionTests: XCTestCase {
             TCTLParser.Expression.disjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
             "\(rawValue) V \(impliesRawValue)"
         )
-        XCTAssertEqual(constrainedExpression.rawValue, "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
+        XCTAssertEqual(
+            constrainedExpression.rawValue, "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
     }
 
     // swiftlint:disable function_body_length
@@ -249,7 +259,8 @@ final class ExpressionTests: XCTestCase {
                     expression: .conditional(
                         expression: .comparison(
                             value: .equality(
-                                lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
+                                lhs: .reference(
+                                    variable: .variable(reference: .variable(name: .finished))),
                                 rhs: .literal(value: .bit(value: .high))
                             )
                         )
@@ -267,7 +278,8 @@ final class ExpressionTests: XCTestCase {
                                 condition: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .failureCount))
+                                            variable: .variable(
+                                                reference: .variable(name: .failureCount))
                                         ),
                                         rhs: .literal(value: .integer(value: 3))
                                     )
@@ -279,7 +291,8 @@ final class ExpressionTests: XCTestCase {
                                 condition: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .finished))
+                                            variable: .variable(
+                                                reference: .variable(name: .finished))
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -300,7 +313,8 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .failureCount))
+                                            variable: .variable(
+                                                reference: .variable(name: .failureCount))
                                         ),
                                         rhs: .literal(value: .integer(value: 3))
                                     )
@@ -329,14 +343,16 @@ final class ExpressionTests: XCTestCase {
             constrainedExpression
         )
         XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}"),
-            .constrained(expression: ConstrainedExpression(
-                expression: .always(expression: .finally(expression: equivalenceExpression)),
-                constraints: [
-                    .lessThan(constraint: .time(amount: 100, unit: .ns)),
-                    .lessThan(constraint: .energy(amount: 200, unit: .mJ))
-                ]
-            ))
+            TCTLParser.Expression(
+                rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}"),
+            .constrained(
+                expression: ConstrainedExpression(
+                    expression: .always(expression: .finally(expression: equivalenceExpression)),
+                    constraints: [
+                        .lessThan(constraint: .time(amount: 100, unit: .ns)),
+                        .lessThan(constraint: .energy(amount: 200, unit: .mJ)),
+                    ]
+                ))
         )
         XCTAssertEqual(
             TCTLParser.Expression(
@@ -404,7 +420,8 @@ final class ExpressionTests: XCTestCase {
                     expression: .conditional(
                         expression: .comparison(
                             value: .equality(
-                                lhs: .reference(variable: .variable(reference: .variable(name: $0))),
+                                lhs: .reference(
+                                    variable: .variable(reference: .variable(name: $0))),
                                 rhs: .literal(value: .bit(value: .high))
                             )
                         )
@@ -436,7 +453,8 @@ final class ExpressionTests: XCTestCase {
         XCTAssertEqual(
             TCTLParser.Expression(rawValue: "!(a = '1' ^ b = '1') V c = '1'"),
             .disjunction(
-                lhs: .not(expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))),
+                lhs: .not(
+                    expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))),
                 rhs: f(.c)
             )
         )
@@ -473,25 +491,32 @@ final class ExpressionTests: XCTestCase {
         XCTAssertNil(TCTLParser.Expression(rawValue: "failureCount = 3 -> recoveryMode = '11'"))
         XCTAssertNil(TCTLParser.Expression(rawValue: "failureCount == 3 -> recoveryMode = '1'"))
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'")
         )
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'")
         )
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'")
         )
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A S recoveryMode = '1' -> finished = '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A S recoveryMode = '1' -> finished = '1'")
         )
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A recoveryMode = '1' -> finished = '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A recoveryMode = '1' -> finished = '1'")
         )
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'")
         )
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'")
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'")
         )
         XCTAssertNil(TCTLParser.Expression(rawValue: "()"))
         XCTAssertNil(TCTLParser.Expression(precedence: rawValue))
@@ -544,21 +569,34 @@ final class ExpressionTests: XCTestCase {
 
     /// Test `init(rawValue:)` for invalid constrained expressions.
     func testInvalidConstrainedRawValue() {
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode! = '1'}_{t < 100 ns, E < 200 mJ}"))
         XCTAssertNil(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} and x = '1'")
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'_{t < 100 ns, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode! = '1'}_{t < 100 ns, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(
+                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} and x = '1'")
         )
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns,, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{A G {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}"))
-        XCTAssertNil(TCTLParser.Expression(constrained: "recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns, E < 200 mJ}}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> ><>"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ ><>"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns}, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns,, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{A G {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}"))
+        XCTAssertNil(
+            TCTLParser.Expression(constrained: "recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}{t < 100 ns, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_t < 100 ns, E < 200 mJ}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns, E < 200 mJ}}"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> ><>"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ ><>"))
+        XCTAssertNil(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns}, E < 200 mJ}"))
     }
 
 }

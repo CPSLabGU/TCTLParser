@@ -58,7 +58,9 @@ import Foundation
 /// A Path-Qualified Expression.
 ///
 /// These expressions applies rules to a specific-path within the `TCTL` branching model.
-public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable, Sendable {
+public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hashable, Codable,
+    Sendable
+{
 
     /// The `expression` must apply to all states within the current path.
     ///
@@ -147,7 +149,8 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard
-            let firstChar = trimmedString.first, CharacterSet.pathQuantifiers.contains(character: firstChar)
+            let firstChar = trimmedString.first,
+            CharacterSet.pathQuantifiers.contains(character: firstChar)
         else {
             self.init(binaryQuantified: trimmedString)
             return
@@ -216,7 +219,8 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
                     range.upperBound < rawValue.endIndex,
                     let charBefore = rawValue[..<range.lowerBound].last,
                     CharacterSet.whitespacesAndNewlines.contains(character: charBefore),
-                    CharacterSet.whitespacesAndNewlines.contains(character: rawValue[range.upperBound])
+                    CharacterSet.whitespacesAndNewlines.contains(
+                        character: rawValue[range.upperBound])
                 else {
                     return nil
                 }
@@ -228,7 +232,8 @@ public indirect enum PathQuantifiedExpression: RawRepresentable, Equatable, Hash
         else {
             return nil
         }
-        let firstQuantifier = rawValue[firstQuantifierIndex].trimmingCharacters(in: .whitespacesAndNewlines)
+        let firstQuantifier = rawValue[firstQuantifierIndex].trimmingCharacters(
+            in: .whitespacesAndNewlines)
         let quantifierChar = firstQuantifier[firstQuantifier.startIndex]
         let lhsRaw = rawValue[..<firstQuantifierIndex.lowerBound]
             .trimmingCharacters(in: .whitespacesAndNewlines)
