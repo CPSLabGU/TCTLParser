@@ -26,7 +26,11 @@
 				"editor.formatOnSave": true,
 				"[swift]": {
 					"editor.defaultFormatter": "swiftlang.swift-vscode"
-				}
+				},
+				"swift.additionalTestArguments": [
+					"--build-system",
+					"native"
+				]
 			}
 		}
 	}
