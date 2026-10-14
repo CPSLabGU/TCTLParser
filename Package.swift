@@ -33,8 +33,8 @@ let package = Package(
         .testTarget(
             name: "TCTLParserTests",
             dependencies: [
-                .target(name: "TCTLParser"), .product(name: "VHDLParsing", package: "VHDLParsing")
+                .target(name: "TCTLParser"), .product(name: "VHDLParsing", package: "VHDLParsing"),
             ],
-        )
+        ),
     ]
 )
