@@ -53,12 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
+import Testing
 import VHDLParsing
-import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``LanguageExpression``.
-final class LanguageExpressionTests: XCTestCase {
+@Suite("Language Expression Tests")
+struct LanguageExpressionTests {
 
     /// The `rawValue` of `vhdl`.
     let vhdlRawValue = "recoveryMode = '1'"
@@ -79,25 +81,29 @@ final class LanguageExpressionTests: XCTestCase {
     }
 
     /// Test that the `rawValue` is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(vhdlExpression.rawValue, vhdlRawValue)
+        #expect(vhdlExpression.rawValue == vhdlRawValue)
     }
 
     /// Test the language is derived correctly.
+    @Test
     func testLanguage() {
-        XCTAssertEqual(vhdlExpression.language, .vhdl)
+        #expect(vhdlExpression.language == .vhdl)
     }
 
     /// Test the `init(rawValue:)` parses the language correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(LanguageExpression(rawValue: vhdlRawValue), vhdlExpression)
+        #expect(LanguageExpression(rawValue: vhdlRawValue) == vhdlExpression)
     }
 
     /// Test the `init(rawValue:)` detects invalid syntax.
+    @Test
     func testInvalidRawValue() {
-        XCTAssertNil(LanguageExpression(rawValue: ""))
-        XCTAssertNil(LanguageExpression(rawValue: "invalid"))
-        XCTAssertNil(LanguageExpression(rawValue: "x!! = 5"))
+        #expect(LanguageExpression(rawValue: "") == nil)
+        #expect(LanguageExpression(rawValue: "invalid") == nil)
+        #expect(LanguageExpression(rawValue: "x!! = 5") == nil)
     }
 
 }

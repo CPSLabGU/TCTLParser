@@ -53,12 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
+import Testing
 import VHDLParsing
-import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``GloballyQuantifiedExpression``.
-final class GloballyQuantifiedExpressionTests: XCTestCase {
+@Suite("GloballyQuantifiedExpressionTests")
+struct GloballyQuantifiedExpressionTests {
 
     /// The raw value of the test expression.
     let alwaysRawValue = "A G recoveryMode = '1'"
@@ -72,7 +74,9 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .recoveryMode))
+                        ),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -91,46 +95,57 @@ final class GloballyQuantifiedExpressionTests: XCTestCase {
     }
 
     /// Test that the `rawValue` is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(alwaysExpression.rawValue, alwaysRawValue)
-        XCTAssertEqual(eventuallyExpression.rawValue, eventuallyRawValue)
+        #expect(alwaysExpression.rawValue == alwaysRawValue)
+        #expect(eventuallyExpression.rawValue == eventuallyRawValue)
     }
 
     /// Test that `init(rawValue:)` correctly parses the `TCTL` expression.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(GloballyQuantifiedExpression(rawValue: alwaysRawValue), alwaysExpression)
-        XCTAssertEqual(GloballyQuantifiedExpression(rawValue: eventuallyRawValue), eventuallyExpression)
+        #expect(GloballyQuantifiedExpression(rawValue: alwaysRawValue) == alwaysExpression)
+        #expect(GloballyQuantifiedExpression(rawValue: eventuallyRawValue) == eventuallyExpression)
     }
 
     /// Test that `init(rawValue:)` detects invalid `TCTL`.
+    @Test
     func testInvalidRawValue() {
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "AG recoveryMode = '1'"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G recoveryMode == '1'"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A A recoveryMode = '1'"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A A G recoveryMode = '1'"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: ""))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G A E recoveryMode = '1'"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G recoveryMode = '1' U failureCount = 3"))
-        XCTAssertNil(GloballyQuantifiedExpression(rawValue: "A G A G recoveryMode = '1' U failureCount = 3"))
+        #expect(GloballyQuantifiedExpression(rawValue: "AG recoveryMode = '1'") == nil)
+        #expect(GloballyQuantifiedExpression(rawValue: "A G recoveryMode == '1'") == nil)
+        #expect(GloballyQuantifiedExpression(rawValue: "A A recoveryMode = '1'") == nil)
+        #expect(GloballyQuantifiedExpression(rawValue: "A A G recoveryMode = '1'") == nil)
+        #expect(GloballyQuantifiedExpression(rawValue: "") == nil)
+        #expect(GloballyQuantifiedExpression(rawValue: "A G A E recoveryMode = '1'") == nil)
+        #expect(
+            GloballyQuantifiedExpression(rawValue: "A G recoveryMode = '1' U failureCount = 3")
+                == nil
+        )
+        #expect(
+            GloballyQuantifiedExpression(rawValue: "A G A G recoveryMode = '1' U failureCount = 3")
+                == nil
+        )
     }
 
     /// Test `init(quantifier:, expression:)` correctly initializes the globally quantified expression.
+    @Test
     func testQuantifierInit() {
-        XCTAssertEqual(
-            GloballyQuantifiedExpression(quantifier: "A", expression: pathExpression),
-            alwaysExpression
+        #expect(
+            GloballyQuantifiedExpression(quantifier: "A", expression: pathExpression)
+                == alwaysExpression
         )
-        XCTAssertEqual(
-            GloballyQuantifiedExpression(quantifier: "E", expression: pathExpression),
-            eventuallyExpression
+        #expect(
+            GloballyQuantifiedExpression(quantifier: "E", expression: pathExpression)
+                == eventuallyExpression
         )
-        XCTAssertNil(GloballyQuantifiedExpression(quantifier: "B", expression: pathExpression))
+        #expect(GloballyQuantifiedExpression(quantifier: "B", expression: pathExpression) == nil)
     }
 
     /// Test `expression` computed property.
+    @Test
     func testExpression() {
-        XCTAssertEqual(alwaysExpression.expression, pathExpression)
-        XCTAssertEqual(eventuallyExpression.expression, pathExpression)
+        #expect(alwaysExpression.expression == pathExpression)
+        #expect(eventuallyExpression.expression == pathExpression)
     }
 
 }

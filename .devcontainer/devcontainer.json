@@ -6,16 +6,14 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000],
-
+	// "forwardPorts": [
+	// 	3000
+	// ],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
-
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
@@ -24,11 +22,14 @@
 			],
 			"settings": {
 				"swift.path": "/usr/bin",
-				"editor.inlayHints.enabled": "offUnlessPressed"
+				"editor.inlayHints.enabled": "offUnlessPressed",
+				"editor.formatOnSave": true,
+				"[swift]": {
+					"editor.defaultFormatter": "swiftlang.swift-vscode"
+				}
 			}
-    	}
+		}
 	}
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }

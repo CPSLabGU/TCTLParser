@@ -53,11 +53,13 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Testing
+
 @testable import TCTLParser
-import XCTest
 
 /// Test class for ``ConstrainedStatement``.
-final class ConstrainedStatementTests: XCTestCase {
+@Suite("Constrained Statement Tests")
+struct ConstrainedStatementTests {
 
     /// A time constraint of `100 ns`.
     let timeConstraint = Constraint.time(amount: 100, unit: .ns)
@@ -93,67 +95,75 @@ final class ConstrainedStatementTests: XCTestCase {
     }
 
     /// Test that `rawValue` is created correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(lessThan.rawValue, "t < 100 ns")
-        XCTAssertEqual(lessThanOrEqual.rawValue, "t <= 100 ns")
-        XCTAssertEqual(greaterThan.rawValue, "t > 100 ns")
-        XCTAssertEqual(greaterThanOrEqual.rawValue, "t >= 100 ns")
-        XCTAssertEqual(equal.rawValue, "t == 100 ns")
-        XCTAssertEqual(notEqual.rawValue, "t != 100 ns")
+        #expect(lessThan.rawValue == "t < 100 ns")
+        #expect(lessThanOrEqual.rawValue == "t <= 100 ns")
+        #expect(greaterThan.rawValue == "t > 100 ns")
+        #expect(greaterThanOrEqual.rawValue == "t >= 100 ns")
+        #expect(equal.rawValue == "t == 100 ns")
+        #expect(notEqual.rawValue == "t != 100 ns")
     }
 
     /// Test the `init(symbol:,operation:,constraint:)` creates the correct statement.
+    @Test
     func testSymbolInit() {
-        XCTAssertEqual(
-            ConstrainedStatement(symbol: "t", operation: "<", constraint: timeConstraint),
-            lessThan
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: "<", constraint: timeConstraint)
+                == lessThan
         )
-        XCTAssertEqual(
-            ConstrainedStatement(symbol: "t", operation: "<=", constraint: timeConstraint),
-            lessThanOrEqual
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: "<=", constraint: timeConstraint)
+                == lessThanOrEqual
         )
-        XCTAssertEqual(
-            ConstrainedStatement(symbol: "t", operation: ">", constraint: timeConstraint),
-            greaterThan
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: ">", constraint: timeConstraint)
+                == greaterThan
         )
-        XCTAssertEqual(
-            ConstrainedStatement(symbol: "t", operation: ">=", constraint: timeConstraint),
-            greaterThanOrEqual
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: ">=", constraint: timeConstraint)
+                == greaterThanOrEqual
         )
-        XCTAssertEqual(
-            ConstrainedStatement(symbol: "t", operation: "==", constraint: timeConstraint),
-            equal
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: "==", constraint: timeConstraint)
+                == equal
         )
-        XCTAssertEqual(
-            ConstrainedStatement(symbol: "t", operation: "!=", constraint: timeConstraint),
-            notEqual
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: "!=", constraint: timeConstraint)
+                == notEqual
         )
-        XCTAssertNil(ConstrainedStatement(symbol: "E", operation: "<", constraint: timeConstraint))
-        XCTAssertNil(ConstrainedStatement(symbol: "t", operation: "<<", constraint: timeConstraint))
+        #expect(
+            ConstrainedStatement(symbol: "E", operation: "<", constraint: timeConstraint) == nil
+        )
+        #expect(
+            ConstrainedStatement(symbol: "t", operation: "<<", constraint: timeConstraint) == nil
+        )
     }
 
     /// Test the `init(rawValue:)` parses the raw value correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(ConstrainedStatement(rawValue: "t < 100 ns"), lessThan)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "t <= 100 ns"), lessThanOrEqual)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "t > 100 ns"), greaterThan)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "t >= 100 ns"), greaterThanOrEqual)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "t == 100 ns"), equal)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "t != 100 ns"), notEqual)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "   t    <    100    ns   "), lessThan)
-        XCTAssertEqual(ConstrainedStatement(rawValue: "\nt\n<\n100\nns\n"), lessThan)
+        #expect(ConstrainedStatement(rawValue: "t < 100 ns") == lessThan)
+        #expect(ConstrainedStatement(rawValue: "t <= 100 ns") == lessThanOrEqual)
+        #expect(ConstrainedStatement(rawValue: "t > 100 ns") == greaterThan)
+        #expect(ConstrainedStatement(rawValue: "t >= 100 ns") == greaterThanOrEqual)
+        #expect(ConstrainedStatement(rawValue: "t == 100 ns") == equal)
+        #expect(ConstrainedStatement(rawValue: "t != 100 ns") == notEqual)
+        #expect(ConstrainedStatement(rawValue: "   t    <    100    ns   ") == lessThan)
+        #expect(ConstrainedStatement(rawValue: "\nt\n<\n100\nns\n") == lessThan)
     }
 
     /// Test that `init(rawValue:)` detects invalid raw values.
+    @Test
     func testInvalidRawValueInit() {
-        XCTAssertNil(ConstrainedStatement(rawValue: "E < 100 ns"))
-        XCTAssertNil(ConstrainedStatement(rawValue: "t << 100 ns"))
-        XCTAssertNil(ConstrainedStatement(rawValue: ""))
-        XCTAssertNil(ConstrainedStatement(rawValue: " "))
-        XCTAssertNil(ConstrainedStatement(rawValue: "t < 100 Ms"))
-        XCTAssertNil(ConstrainedStatement(rawValue: "100 ns > t"))
-        XCTAssertNil(ConstrainedStatement(rawValue: "< 100 ns"))
-        XCTAssertNil(ConstrainedStatement(rawValue: "t <"))
+        #expect(ConstrainedStatement(rawValue: "E < 100 ns") == nil)
+        #expect(ConstrainedStatement(rawValue: "t << 100 ns") == nil)
+        #expect(ConstrainedStatement(rawValue: "") == nil)
+        #expect(ConstrainedStatement(rawValue: " ") == nil)
+        #expect(ConstrainedStatement(rawValue: "t < 100 Ms") == nil)
+        #expect(ConstrainedStatement(rawValue: "100 ns > t") == nil)
+        #expect(ConstrainedStatement(rawValue: "< 100 ns") == nil)
+        #expect(ConstrainedStatement(rawValue: "t <") == nil)
     }
 
 }

@@ -53,12 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
+import Testing
 import VHDLParsing
-import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``ConstrainedExpression``.
-final class ConstrainedExpressionTests: XCTestCase {
+@Suite("Constrained Expression Tests")
+struct ConstrainedExpressionTests {
 
     /// A `true` expression.
     let expression = GloballyQuantifiedExpression.always(
@@ -81,51 +83,57 @@ final class ConstrainedExpressionTests: XCTestCase {
     }
 
     /// Test the stored properties are set correctly.
+    @Test
     func testStoredPropertyInit() {
-        XCTAssertEqual(constrainedExpression.expression, expression)
-        XCTAssertEqual(constrainedExpression.constraints, constraints)
+        #expect(constrainedExpression.expression == expression)
+        #expect(constrainedExpression.constraints == constraints)
     }
 
     /// Test that `rawValue` is created correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(constrainedExpression.rawValue, "{A F true}_{t < 100 ns, E < 200 mJ}")
+        #expect(constrainedExpression.rawValue == "{A F true}_{t < 100 ns, E < 200 mJ}")
     }
 
     /// Test the `init(rawValue:)` parses the `rawValue` correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(
-            ConstrainedExpression(rawValue: "{A F true}_{t < 100 ns, E < 200 mJ}"),
-            constrainedExpression
+        #expect(
+            ConstrainedExpression(rawValue: "{A F true}_{t < 100 ns, E < 200 mJ}")
+                == constrainedExpression
         )
-        XCTAssertEqual(
-            ConstrainedExpression(rawValue: "\n{\nA F true\n}_{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
-            constrainedExpression
+        #expect(
+            ConstrainedExpression(rawValue: "\n{\nA F true\n}_{\nt\n<\n100\nns,\nE\n<\n200\nmJ}")
+                == constrainedExpression
         )
-        XCTAssertEqual(
-            ConstrainedExpression(rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"),
-            constrainedExpression
+        #expect(
+            ConstrainedExpression(
+                rawValue: "\n{\nA F true\n}\n_\n{\nt\n<\n100\nns,\nE\n<\n200\nmJ}"
+            )
+                == constrainedExpression
         )
     }
 
     /// Test that `init(rawValue:)` detects invalid raw values.
+    @Test
     func testInvalidRawValueInit() {
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true_{t < 100 ns, E < 200 mJ"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_{t < 100 ns, E < 200 mJ"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "true}_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true!}_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_{E < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_{t < 100 ns, t < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_{t < 100 ns E < 200 mJ}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_{"))
-        XCTAssertNil(ConstrainedExpression(rawValue: "{true}_{}"))
-        XCTAssertNil(ConstrainedExpression(rawValue: ""))
-        XCTAssertNil(ConstrainedExpression(rawValue: " "))
-        XCTAssertNil(ConstrainedExpression(rawValue: "\n"))
+        #expect(ConstrainedExpression(rawValue: "{true_{t < 100 ns, E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true_{t < 100 ns, E < 200 mJ") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}{t < 100 ns, E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_t < 100 ns, E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_{t < 100 ns, E < 200 mJ") == nil)
+        #expect(ConstrainedExpression(rawValue: "true}_{t < 100 ns, E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true!}_{t < 100 ns, E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_{E < 100 ns, E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_{t < 100 ns, t < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_{t < 100 ns E < 200 mJ}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_{") == nil)
+        #expect(ConstrainedExpression(rawValue: "{true}_{}") == nil)
+        #expect(ConstrainedExpression(rawValue: "") == nil)
+        #expect(ConstrainedExpression(rawValue: " ") == nil)
+        #expect(ConstrainedExpression(rawValue: "\n") == nil)
     }
 
 }

@@ -53,40 +53,46 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Testing
+
 @testable import TCTLParser
-import XCTest
 
 /// Test class for ``Configuration``.
-final class ConfigurationTests: XCTestCase {
+@Suite("Configuration Tests")
+struct ConfigurationTests {
 
     /// A test configuration.
     let configuration = Configuration(language: .vhdl)
 
     /// Test that stored properties are initialized correctly.
+    @Test
     func testPropertyInit() {
-        XCTAssertEqual(configuration.language, .vhdl)
+        #expect(configuration.language == .vhdl)
     }
 
     /// Test that the `rawValue` is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(configuration.rawValue, "// spec:language VHDL")
+        #expect(configuration.rawValue == "// spec:language VHDL")
     }
 
     /// Test that `init(rawValue:)` parses the raw value correctly.
+    @Test
     func testRawValueInit() {
         let rawValue = "// spec:language VHDL"
-        XCTAssertEqual(Configuration(rawValue: rawValue), configuration)
+        #expect(Configuration(rawValue: rawValue) == configuration)
     }
 
     /// Test that `init(rawValue:)` detects invalid raw values.
+    @Test
     func testInvalidRawValues() {
-        XCTAssertNil(Configuration(rawValue: ""))
-        XCTAssertNil(Configuration(rawValue: "spec:language VHDL"))
-        XCTAssertNil(Configuration(rawValue: "// spec:language swift"))
-        XCTAssertNil(Configuration(rawValue: "// spec:language"))
-        XCTAssertNil(Configuration(rawValue: "// spec:language VHDL\n//"))
-        XCTAssertNil(Configuration(rawValue: "// spec:language VHDL\n// spec:language VHDL"))
-        XCTAssertNil(Configuration(rawValue: "// spec:lang VHDL"))
+        #expect(Configuration(rawValue: "") == nil)
+        #expect(Configuration(rawValue: "spec:language VHDL") == nil)
+        #expect(Configuration(rawValue: "// spec:language swift") == nil)
+        #expect(Configuration(rawValue: "// spec:language") == nil)
+        #expect(Configuration(rawValue: "// spec:language VHDL\n//") == nil)
+        #expect(Configuration(rawValue: "// spec:language VHDL\n// spec:language VHDL") == nil)
+        #expect(Configuration(rawValue: "// spec:lang VHDL") == nil)
     }
 
 }

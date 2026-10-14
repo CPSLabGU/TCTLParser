@@ -108,7 +108,9 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
         guard bracketCount == 0 else {
             return nil
         }
-        let expressionRaw = remaining[..<remaining.index(remaining.startIndex, offsetBy: terminatingIndex)]
+        let expressionRaw = remaining[
+            ..<remaining.index(remaining.startIndex, offsetBy: terminatingIndex)
+        ]
         guard
             let expression = GloballyQuantifiedExpression(rawValue: String(expressionRaw)),
             remaining.count > terminatingIndex + 1
@@ -128,7 +130,10 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
         guard withoutUnderscore.hasPrefix("{") else {
             return nil
         }
-        let constraintsRaw = withoutUnderscore.dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+        let constraintsRaw = withoutUnderscore.dropFirst()
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
         let constraintsComponents = constraintsRaw.components(separatedBy: ",")
         let constraints = constraintsComponents.compactMap { ConstrainedStatement(rawValue: $0) }
         guard constraints.count == constraintsComponents.count, !constraints.isEmpty else {

@@ -105,7 +105,10 @@ public enum ConstrainedStatement: RawRepresentable, Equatable, Hashable, Codable
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard
-            let operation = ["<=", ">=", "==", "!=", "<", ">"].first(where: { trimmedString.contains($0) })
+            let operation = ["<=", ">=", "==", "!=", "<", ">"]
+                .first(where: {
+                    trimmedString.contains($0)
+                })
         else {
             return nil
         }

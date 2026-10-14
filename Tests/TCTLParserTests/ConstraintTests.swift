@@ -53,11 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import Testing
+
 @testable import TCTLParser
-import XCTest
 
 /// Test class for ``Constraint``.
-final class ConstraintTests: XCTestCase {
+
+@Suite("Constraint Tests")
+struct ConstraintTests {
 
     /// A test time constraint.
     let timeConstraint = Constraint.time(amount: 100, unit: .ns)
@@ -66,50 +69,56 @@ final class ConstraintTests: XCTestCase {
     let energyConstraint = Constraint.energy(amount: 200, unit: .J)
 
     /// Test the symbol computed property.
+    @Test
     func testSymbol() {
-        XCTAssertEqual(timeConstraint.symbol, "t")
-        XCTAssertEqual(energyConstraint.symbol, "E")
+        #expect(timeConstraint.symbol == "t")
+        #expect(energyConstraint.symbol == "E")
     }
 
     /// Test that amount computed property.
+    @Test
     func testAmount() {
-        XCTAssertEqual(timeConstraint.amount, 100)
-        XCTAssertEqual(energyConstraint.amount, 200)
+        #expect(timeConstraint.amount == 100)
+        #expect(energyConstraint.amount == 200)
     }
 
     /// Test the unit computed property.
+    @Test
     func testUnit() {
-        XCTAssertEqual(timeConstraint.unit, "ns")
-        XCTAssertEqual(energyConstraint.unit, "J")
+        #expect(timeConstraint.unit == "ns")
+        #expect(energyConstraint.unit == "J")
     }
 
     /// Test the raw value.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(timeConstraint.rawValue, "100 ns")
-        XCTAssertEqual(energyConstraint.rawValue, "200 J")
+        #expect(timeConstraint.rawValue == "100 ns")
+        #expect(energyConstraint.rawValue == "200 J")
     }
 
     /// Test that `init(rawValue:)` parses the raw value correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(Constraint(rawValue: "100 ns"), timeConstraint)
-        XCTAssertEqual(Constraint(rawValue: "200 J"), energyConstraint)
-        XCTAssertEqual(Constraint(rawValue: "100\nns"), timeConstraint)
-        XCTAssertEqual(Constraint(rawValue: "100    ns"), timeConstraint)
-        XCTAssertEqual(Constraint(rawValue: "   100    ns  "), timeConstraint)
-        XCTAssertEqual(Constraint(rawValue: "\n100\nns\n"), timeConstraint)
+        #expect(Constraint(rawValue: "100 ns") == timeConstraint)
+        #expect(Constraint(rawValue: "200 J") == energyConstraint)
+        #expect(Constraint(rawValue: "100\nns") == timeConstraint)
+        #expect(Constraint(rawValue: "100    ns") == timeConstraint)
+        #expect(Constraint(rawValue: "   100    ns  ") == timeConstraint)
+        #expect(Constraint(rawValue: "\n100\nns\n") == timeConstraint)
     }
 
     /// Test the `init(rawValue:)` detects invalid strings.
+    @Test
     func testInvalidRawValueInit() {
-        XCTAssertNil(Constraint(rawValue: "100"))
-        XCTAssertNil(Constraint(rawValue: "ns"))
-        XCTAssertNil(Constraint(rawValue: "100 ns J"))
-        XCTAssertNil(Constraint(rawValue: ""))
-        XCTAssertNil(Constraint(rawValue: "100ns"))
-        XCTAssertNil(Constraint(rawValue: "100 ns 1"))
-        XCTAssertNil(Constraint(rawValue: "100"))
-        XCTAssertNil(Constraint(rawValue: "     "))
-        XCTAssertNil(Constraint(rawValue: " "))
+        #expect(Constraint(rawValue: "100") == nil)
+        #expect(Constraint(rawValue: "ns") == nil)
+        #expect(Constraint(rawValue: "100 ns J") == nil)
+        #expect(Constraint(rawValue: "") == nil)
+        #expect(Constraint(rawValue: "100ns") == nil)
+        #expect(Constraint(rawValue: "100 ns 1") == nil)
+        #expect(Constraint(rawValue: "100") == nil)
+        #expect(Constraint(rawValue: "     ") == nil)
+        #expect(Constraint(rawValue: " ") == nil)
     }
 
 }

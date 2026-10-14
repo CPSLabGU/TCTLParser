@@ -53,15 +53,16 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
+import Testing
 import VHDLParsing
-import XCTest
+
+@testable import TCTLParser
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
 /// Test class for ``Expression``.
-final class ExpressionTests: XCTestCase {
+struct ExpressionTests {
 
     /// The `rawValue` of the expression.
     let rawValue = "recoveryMode = '1'"
@@ -93,7 +94,9 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .failureCount))
+                        ),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -103,7 +106,9 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .recoveryMode))
+                        ),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -117,7 +122,9 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .failureCount))
+                        ),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -127,7 +134,9 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .recoveryMode))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .recoveryMode))
+                        ),
                         rhs: .literal(value: .bit(value: .high))
                     )
                 )
@@ -141,7 +150,9 @@ final class ExpressionTests: XCTestCase {
             expression: .conditional(
                 expression: .comparison(
                     value: .equality(
-                        lhs: .reference(variable: .variable(reference: .variable(name: .failureCount))),
+                        lhs: .reference(
+                            variable: .variable(reference: .variable(name: .failureCount))
+                        ),
                         rhs: .literal(value: .integer(value: 3))
                     )
                 )
@@ -156,7 +167,9 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .recoveryMode))
+                                            variable: .variable(
+                                                reference: .variable(name: .recoveryMode)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -168,7 +181,9 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .finished))
+                                            variable: .variable(
+                                                reference: .variable(name: .finished)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -192,7 +207,9 @@ final class ExpressionTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .recoveryMode))
+                                            variable: .variable(
+                                                reference: .variable(name: .recoveryMode)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -210,193 +227,213 @@ final class ExpressionTests: XCTestCase {
     )
 
     /// Test that the `rawValue` is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(vhdl.rawValue, rawValue)
-        XCTAssertEqual(impliesExpression.rawValue, impliesRawValue)
-        XCTAssertEqual(equivalenceExpression.rawValue, equivalenceRawValue)
-        XCTAssertEqual(subExpression.rawValue, subExpressionRawValue)
-        XCTAssertEqual(TCTLParser.Expression.precedence(expression: vhdl).rawValue, "(\(rawValue))")
-        XCTAssertEqual(TCTLParser.Expression.not(expression: vhdl).rawValue, "!\(rawValue)")
-        XCTAssertEqual(
-            TCTLParser.Expression.conjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
-            "\(rawValue) ^ \(impliesRawValue)"
+        #expect(vhdl.rawValue == rawValue)
+        #expect(impliesExpression.rawValue == impliesRawValue)
+        #expect(equivalenceExpression.rawValue == equivalenceRawValue)
+        #expect(subExpression.rawValue == subExpressionRawValue)
+        #expect(TCTLParser.Expression.precedence(expression: vhdl).rawValue == "(\(rawValue))")
+        #expect(TCTLParser.Expression.not(expression: vhdl).rawValue == "!\(rawValue)")
+        #expect(
+            TCTLParser.Expression.conjunction(lhs: vhdl, rhs: impliesExpression).rawValue
+                == "\(rawValue) ^ \(impliesRawValue)"
         )
-        XCTAssertEqual(
-            TCTLParser.Expression.disjunction(lhs: vhdl, rhs: impliesExpression).rawValue,
-            "\(rawValue) V \(impliesRawValue)"
+        #expect(
+            TCTLParser.Expression.disjunction(lhs: vhdl, rhs: impliesExpression).rawValue
+                == "\(rawValue) V \(impliesRawValue)"
         )
-        XCTAssertEqual(constrainedExpression.rawValue, "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
+        #expect(
+            constrainedExpression.rawValue == "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
+        )
     }
 
     // swiftlint:disable function_body_length
 
     /// Test that the `init(rawValue:)` parses the expression correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(Expression(rawValue: rawValue), vhdl)
-        XCTAssertEqual(Expression(rawValue: impliesRawValue), impliesExpression)
-        XCTAssertEqual(Expression(rawValue: equivalenceRawValue), equivalenceExpression)
-        XCTAssertEqual(Expression(rawValue: subExpressionRawValue), subExpression)
-        XCTAssertEqual(Expression(rawValue: "(\(rawValue))"), .precedence(expression: vhdl))
-        XCTAssertEqual(
-            Expression(rawValue: "(\(subExpressionRawValue))"),
-            .precedence(expression: subExpression)
+        #expect(Expression(rawValue: rawValue) == vhdl)
+        #expect(Expression(rawValue: impliesRawValue) == impliesExpression)
+        #expect(Expression(rawValue: equivalenceRawValue) == equivalenceExpression)
+        #expect(Expression(rawValue: subExpressionRawValue) == subExpression)
+        #expect(Expression(rawValue: "(\(rawValue))") == .precedence(expression: vhdl))
+        #expect(
+            Expression(rawValue: "(\(subExpressionRawValue))")
+                == .precedence(expression: subExpression)
         )
-        XCTAssertEqual(
-            Expression(rawValue: "(\(impliesRawValue)) -> finished = '1'"),
-            .implies(
-                lhs: .precedence(expression: impliesExpression),
-                rhs: .vhdl(
-                    expression: .conditional(
-                        expression: .comparison(
-                            value: .equality(
-                                lhs: .reference(variable: .variable(reference: .variable(name: .finished))),
-                                rhs: .literal(value: .bit(value: .high))
-                            )
-                        )
-                    )
-                )
-            )
-        )
-        XCTAssertEqual(
-            Expression(rawValue: "(failureCount = 3) and (finished = '1')"),
-            .vhdl(
-                expression: .boolean(
-                    expression: .and(
-                        lhs: .precedence(
-                            value: .conditional(
-                                condition: .comparison(
-                                    value: .equality(
-                                        lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .failureCount))
-                                        ),
-                                        rhs: .literal(value: .integer(value: 3))
-                                    )
-                                )
-                            )
-                        ),
-                        rhs: .precedence(
-                            value: .conditional(
-                                condition: .comparison(
-                                    value: .equality(
-                                        lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .finished))
-                                        ),
-                                        rhs: .literal(value: .bit(value: .high))
-                                    )
+        #expect(
+            Expression(rawValue: "(\(impliesRawValue)) -> finished = '1'")
+                == .implies(
+                    lhs: .precedence(expression: impliesExpression),
+                    rhs: .vhdl(
+                        expression: .conditional(
+                            expression: .comparison(
+                                value: .equality(
+                                    lhs: .reference(
+                                        variable: .variable(reference: .variable(name: .finished))
+                                    ),
+                                    rhs: .literal(value: .bit(value: .high))
                                 )
                             )
                         )
                     )
                 )
-            )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "A failureCount = 3 U recoveryMode = '1'"),
-            .quantified(
-                expression: .always(
-                    expression: .until(
-                        lhs: .vhdl(
-                            expression: .conditional(
-                                expression: .comparison(
-                                    value: .equality(
-                                        lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .failureCount))
-                                        ),
-                                        rhs: .literal(value: .integer(value: 3))
+        #expect(
+            Expression(rawValue: "(failureCount = 3) and (finished = '1')")
+                == .vhdl(
+                    expression: .boolean(
+                        expression: .and(
+                            lhs: .precedence(
+                                value: .conditional(
+                                    condition: .comparison(
+                                        value: .equality(
+                                            lhs: .reference(
+                                                variable: .variable(
+                                                    reference: .variable(name: .failureCount)
+                                                )
+                                            ),
+                                            rhs: .literal(value: .integer(value: 3))
+                                        )
+                                    )
+                                )
+                            ),
+                            rhs: .precedence(
+                                value: .conditional(
+                                    condition: .comparison(
+                                        value: .equality(
+                                            lhs: .reference(
+                                                variable: .variable(
+                                                    reference: .variable(name: .finished)
+                                                )
+                                            ),
+                                            rhs: .literal(value: .bit(value: .high))
+                                        )
                                     )
                                 )
                             )
-                        ),
-                        rhs: vhdl
+                        )
                     )
                 )
-            )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "!(recoveryMode = '1')"),
-            .not(expression: .precedence(expression: vhdl))
+        #expect(
+            TCTLParser.Expression(rawValue: "A failureCount = 3 U recoveryMode = '1'")
+                == .quantified(
+                    expression: .always(
+                        expression: .until(
+                            lhs: .vhdl(
+                                expression: .conditional(
+                                    expression: .comparison(
+                                        value: .equality(
+                                            lhs: .reference(
+                                                variable: .variable(
+                                                    reference: .variable(name: .failureCount)
+                                                )
+                                            ),
+                                            rhs: .literal(value: .integer(value: 3))
+                                        )
+                                    )
+                                )
+                            ),
+                            rhs: vhdl
+                        )
+                    )
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"),
-            constrainedExpression
+        #expect(
+            TCTLParser.Expression(rawValue: "!(recoveryMode = '1')")
+                == .not(expression: .precedence(expression: vhdl))
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
+                == constrainedExpression
         )
     }
 
     /// Test complex raw values in `init(rawValue:)`.
+    @Test
     func testComplexRawValueInit() {
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}   "),
-            constrainedExpression
+        #expect(
+            TCTLParser.Expression(rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}   ")
+                == constrainedExpression
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}"),
-            .constrained(expression: ConstrainedExpression(
-                expression: .always(expression: .finally(expression: equivalenceExpression)),
-                constraints: [
-                    .lessThan(constraint: .time(amount: 100, unit: .ns)),
-                    .lessThan(constraint: .energy(amount: 200, unit: .mJ))
-                ]
-            ))
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "{A F \(equivalenceRawValue)}_{t < 100 ns, E < 200 mJ}"
+            )
+                == .constrained(
+                    expression: ConstrainedExpression(
+                        expression: .always(
+                            expression: .finally(expression: equivalenceExpression)
+                        ),
+                        constraints: [
+                            .lessThan(constraint: .time(amount: 100, unit: .ns)),
+                            .lessThan(constraint: .energy(amount: 200, unit: .mJ)),
+                        ]
+                    )
+                )
         )
-        XCTAssertEqual(
+        #expect(
             TCTLParser.Expression(
                 rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> recoveryMode = '1'"
-            ),
-            .implies(lhs: constrainedExpression, rhs: vhdl)
+            )
+                == .implies(lhs: constrainedExpression, rhs: vhdl)
         )
-        XCTAssertEqual(
+        #expect(
             TCTLParser.Expression(
                 rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ recoveryMode = '1'"
-            ),
-            .conjunction(lhs: constrainedExpression, rhs: vhdl)
+            )
+                == .conjunction(lhs: constrainedExpression, rhs: vhdl)
         )
-        XCTAssertEqual(
+        #expect(
             TCTLParser.Expression(
                 rawValue: "recoveryMode = '1' ^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
-            ),
-            .conjunction(lhs: vhdl, rhs: constrainedExpression)
+            )
+                == .conjunction(lhs: vhdl, rhs: constrainedExpression)
         )
-        XCTAssertEqual(
+        #expect(
             TCTLParser.Expression(
                 rawValue: "{A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} "
                     + "^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"
-            ),
-            .conjunction(lhs: constrainedExpression, rhs: constrainedExpression)
+            )
+                == .conjunction(lhs: constrainedExpression, rhs: constrainedExpression)
         )
-        XCTAssertEqual(
+        #expect(
             TCTLParser.Expression(
                 rawValue: """
                     {A F recoveryMode = '1' ^ {A F recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}_{t < 200 ns}
                     """
-            ),
-            .constrained(
-                expression: ConstrainedExpression(
-                    expression: .always(
-                        expression: .finally(
-                            expression: .conjunction(lhs: vhdl, rhs: constrainedExpression)
-                        )
-                    ),
-                    constraints: [.lessThan(constraint: .time(amount: 200, unit: .ns))]
-                )
             )
+                == .constrained(
+                    expression: ConstrainedExpression(
+                        expression: .always(
+                            expression: .finally(
+                                expression: .conjunction(lhs: vhdl, rhs: constrainedExpression)
+                            )
+                        ),
+                        constraints: [.lessThan(constraint: .time(amount: 200, unit: .ns))]
+                    )
+                )
         )
     }
 
     /// Test `init(rawValue:)` for logic operations.
+    @Test
     func testLogicalRawValueInit() {
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "\(rawValue) ^ \(impliesRawValue)"),
-            .conjunction(
-                lhs: vhdl,
-                rhs: impliesExpression
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "\(rawValue) ^ \(impliesRawValue)")
+                == .conjunction(
+                    lhs: vhdl,
+                    rhs: impliesExpression
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "\(rawValue) V \(impliesRawValue)"),
-            .disjunction(
-                lhs: vhdl,
-                rhs: impliesExpression
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "\(rawValue) V \(impliesRawValue)")
+                == .disjunction(
+                    lhs: vhdl,
+                    rhs: impliesExpression
+                )
         )
         let f: (VariableName) -> TCTLParser.Expression = {
             TCTLParser.Expression.language(
@@ -404,7 +441,9 @@ final class ExpressionTests: XCTestCase {
                     expression: .conditional(
                         expression: .comparison(
                             value: .equality(
-                                lhs: .reference(variable: .variable(reference: .variable(name: $0))),
+                                lhs: .reference(
+                                    variable: .variable(reference: .variable(name: $0))
+                                ),
                                 rhs: .literal(value: .bit(value: .high))
                             )
                         )
@@ -412,153 +451,212 @@ final class ExpressionTests: XCTestCase {
                 )
             )
         }
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V c = '1'"),
-            .conjunction(
-                lhs: f(.a),
-                rhs: .disjunction(lhs: f(.b), rhs: f(.c))
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V c = '1'")
+                == .conjunction(
+                    lhs: f(.a),
+                    rhs: .disjunction(lhs: f(.b), rhs: f(.c))
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "(a = '1' ^ b = '1') V c = '1'"),
-            .disjunction(
-                lhs: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b))),
-                rhs: f(.c)
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "(a = '1' ^ b = '1') V c = '1'")
+                == .disjunction(
+                    lhs: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b))),
+                    rhs: f(.c)
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V (c = '1')"),
-            .conjunction(
-                lhs: f(.a),
-                rhs: .disjunction(lhs: f(.b), rhs: .precedence(expression: f(.c)))
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V (c = '1')")
+                == .conjunction(
+                    lhs: f(.a),
+                    rhs: .disjunction(lhs: f(.b), rhs: .precedence(expression: f(.c)))
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "!(a = '1' ^ b = '1') V c = '1'"),
-            .disjunction(
-                lhs: .not(expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))),
-                rhs: f(.c)
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "!(a = '1' ^ b = '1') V c = '1'")
+                == .disjunction(
+                    lhs: .not(
+                        expression: .precedence(expression: .conjunction(lhs: f(.a), rhs: f(.b)))
+                    ),
+                    rhs: f(.c)
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V !(c = '1')"),
-            .conjunction(
-                lhs: f(.a),
-                rhs: .disjunction(lhs: f(.b), rhs: .not(expression: .precedence(expression: f(.c))))
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "a = '1' ^ b = '1' V !(c = '1')")
+                == .conjunction(
+                    lhs: f(.a),
+                    rhs: .disjunction(
+                        lhs: f(.b),
+                        rhs: .not(expression: .precedence(expression: f(.c)))
+                    )
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "!(a = '1') ^ b = '1' V c = '1'"),
-            .conjunction(
-                lhs: .not(expression: .precedence(expression: f(.a))),
-                rhs: .disjunction(lhs: f(.b), rhs: f(.c))
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "!(a = '1') ^ b = '1' V c = '1'")
+                == .conjunction(
+                    lhs: .not(expression: .precedence(expression: f(.a))),
+                    rhs: .disjunction(lhs: f(.b), rhs: f(.c))
+                )
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(rawValue: "a = '1' ^ !(b = '1') V c = '1'"),
-            .conjunction(
-                lhs: f(.a),
-                rhs: .disjunction(lhs: .not(expression: .precedence(expression: f(.b))), rhs: f(.c))
-            )
+        #expect(
+            TCTLParser.Expression(rawValue: "a = '1' ^ !(b = '1') V c = '1'")
+                == .conjunction(
+                    lhs: f(.a),
+                    rhs: .disjunction(
+                        lhs: .not(expression: .precedence(expression: f(.b))),
+                        rhs: f(.c)
+                    )
+                )
         )
     }
 
     /// Test that invalid `rawValue` returns `nil`.
+    @Test
     func testInvalidRawValue() {
-        XCTAssertNil(TCTLParser.Expression(rawValue: "recoveryMode == '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "recoveryMode = '11'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: ""))
-        XCTAssertNil(TCTLParser.Expression(rawValue: " "))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "failureCount = 3 ->"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "failureCount = 3 -> recoveryMode = '11'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "failureCount == 3 -> recoveryMode = '1'"))
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'")
+        #expect(TCTLParser.Expression(rawValue: "recoveryMode == '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "recoveryMode = '11'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "") == nil)
+        #expect(TCTLParser.Expression(rawValue: " ") == nil)
+        #expect(TCTLParser.Expression(rawValue: "failureCount = 3 ->") == nil)
+        #expect(TCTLParser.Expression(rawValue: "failureCount = 3 -> recoveryMode = '11'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "failureCount == 3 -> recoveryMode = '1'") == nil)
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' -> finished == '1'"
+            ) == nil
         )
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'")
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' <- finished = '1'"
+            ) == nil
         )
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'")
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A G recoveryMode = '1' finished == '1'"
+            ) == nil
         )
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A S recoveryMode = '1' -> finished = '1'")
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A S recoveryMode = '1' -> finished = '1'"
+            ) == nil
         )
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> A recoveryMode = '1' -> finished = '1'")
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> A recoveryMode = '1' -> finished = '1'"
+            ) == nil
         )
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'")
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> G recoveryMode = '1' -> finished = '1'"
+            ) == nil
         )
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'")
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "failureCount = 3 -> G recoveryMode = '1' <- finished = '1'"
+            ) == nil
         )
-        XCTAssertNil(TCTLParser.Expression(rawValue: "()"))
-        XCTAssertNil(TCTLParser.Expression(precedence: rawValue))
-        XCTAssertNil(TCTLParser.Expression(rawValue: ")"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "("))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "(invalid!) -> finished = '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "(finished = '1') -> invalid!"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "(finished = '1') and invalid!"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "(invalid!)"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "!"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "(recoveryMode = '1')!"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "!recoveryMode = '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "!not recoveryMode"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "!!"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "^"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "V"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "^ b = '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' ^"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "V b = '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' V"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "a == '1' ^ b = '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "a == '1' V b = '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' ^ b == '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "a = '1' V b == '1'"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "(a = '1') => b == '1'"))
+        #expect(TCTLParser.Expression(rawValue: "()") == nil)
+        #expect(TCTLParser.Expression(precedence: rawValue) == nil)
+        #expect(TCTLParser.Expression(rawValue: ")") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(invalid!) -> finished = '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(finished = '1') -> invalid!") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(finished = '1') and invalid!") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(invalid!)") == nil)
+        #expect(TCTLParser.Expression(rawValue: "!") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(recoveryMode = '1')!") == nil)
+        #expect(TCTLParser.Expression(rawValue: "!recoveryMode = '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "!not recoveryMode") == nil)
+        #expect(TCTLParser.Expression(rawValue: "!!") == nil)
+        #expect(TCTLParser.Expression(rawValue: "^") == nil)
+        #expect(TCTLParser.Expression(rawValue: "V") == nil)
+        #expect(TCTLParser.Expression(rawValue: "^ b = '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "a = '1' ^") == nil)
+        #expect(TCTLParser.Expression(rawValue: "V b = '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "a = '1' V") == nil)
+        #expect(TCTLParser.Expression(rawValue: "a == '1' ^ b = '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "a == '1' V b = '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "a = '1' ^ b == '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "a = '1' V b == '1'") == nil)
+        #expect(TCTLParser.Expression(rawValue: "(a = '1') => b == '1'") == nil)
     }
 
     // swiftlint:enable function_body_length
 
     /// Test init(binaryOperation:,lhs:,rhs:).
+    @Test
     func testBinaryOperationInit() {
-        XCTAssertEqual(
-            TCTLParser.Expression(binaryOperation: "^", lhs: vhdl, rhs: impliesExpression),
-            .conjunction(lhs: vhdl, rhs: impliesExpression)
+        #expect(
+            TCTLParser.Expression(binaryOperation: "^", lhs: vhdl, rhs: impliesExpression)
+                == .conjunction(lhs: vhdl, rhs: impliesExpression)
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(binaryOperation: "V", lhs: vhdl, rhs: impliesExpression),
-            .disjunction(lhs: vhdl, rhs: impliesExpression)
+        #expect(
+            TCTLParser.Expression(binaryOperation: "V", lhs: vhdl, rhs: impliesExpression)
+                == .disjunction(lhs: vhdl, rhs: impliesExpression)
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(binaryOperation: "->", lhs: vhdl, rhs: impliesExpression),
-            .implies(lhs: vhdl, rhs: impliesExpression)
+        #expect(
+            TCTLParser.Expression(binaryOperation: "->", lhs: vhdl, rhs: impliesExpression)
+                == .implies(lhs: vhdl, rhs: impliesExpression)
         )
-        XCTAssertEqual(
-            TCTLParser.Expression(binaryOperation: "<->", lhs: vhdl, rhs: equivalenceExpression),
-            .equivalence(lhs: vhdl, rhs: equivalenceExpression)
+        #expect(
+            TCTLParser.Expression(binaryOperation: "<->", lhs: vhdl, rhs: equivalenceExpression)
+                == .equivalence(lhs: vhdl, rhs: equivalenceExpression)
         )
-        XCTAssertNil(TCTLParser.Expression(binaryOperation: "v", lhs: vhdl, rhs: impliesExpression))
+        #expect(
+            TCTLParser.Expression(binaryOperation: "v", lhs: vhdl, rhs: impliesExpression) == nil
+        )
     }
 
     /// Test `init(rawValue:)` for invalid constrained expressions.
+    @Test
     func testInvalidConstrainedRawValue() {
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode! = '1'}_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(
-            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} and x = '1'")
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'_{t < 100 ns, E < 200 mJ}") == nil
         )
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns,, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{A G {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}"))
-        XCTAssertNil(TCTLParser.Expression(constrained: "recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}{t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_t < 100 ns, E < 200 mJ}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns, E < 200 mJ}}"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> ><>"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ ><>"))
-        XCTAssertNil(TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns}, E < 200 mJ}"))
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode! = '1'}_{t < 100 ns, E < 200 mJ}") == nil
+        )
+        #expect(
+            TCTLParser.Expression(
+                rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} and x = '1'"
+            ) == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns,, E < 200 mJ}") == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{A G {recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}}")
+                == nil
+        )
+        #expect(
+            TCTLParser.Expression(constrained: "recoveryMode = '1'}_{t < 100 ns, E < 200 mJ}")
+                == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}{t < 100 ns, E < 200 mJ}") == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_t < 100 ns, E < 200 mJ}") == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns, E < 200 mJ}}")
+                == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ") == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} -> ><>")
+                == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{t < 100 ns, E < 200 mJ} ^ ><>")
+                == nil
+        )
+        #expect(
+            TCTLParser.Expression(rawValue: "{recoveryMode = '1'}_{{t < 100 ns}, E < 200 mJ}")
+                == nil
+        )
     }
 
 }

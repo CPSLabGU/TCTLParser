@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -18,7 +18,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.3.0"),
-        .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0")
+        .package(url: "https://github.com/mipalgu/VHDLParsing", from: "2.4.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -28,11 +28,13 @@ let package = Package(
             name: "TCTLParser",
             dependencies: [
                 .product(name: "VHDLParsing", package: "VHDLParsing")
-            ]
+            ],
         ),
         .testTarget(
             name: "TCTLParserTests",
-            dependencies: [.target(name: "TCTLParser"), .product(name: "VHDLParsing", package: "VHDLParsing")]
-        )
+            dependencies: [
+                .target(name: "TCTLParser"), .product(name: "VHDLParsing", package: "VHDLParsing"),
+            ],
+        ),
     ]
 )

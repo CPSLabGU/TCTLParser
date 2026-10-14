@@ -53,12 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
+import Testing
 import VHDLParsing
-import XCTest
 
-/// Test class for ``VHDLExpression``.
-final class VHDLExpressionTests: XCTestCase {
+@testable import TCTLParser
+
+/// Test suite for ``VHDLExpression``.
+@Suite("VHDL Expression Tests")
+struct VHDLExpressionTests {
 
     /// The raw value of a boolean expression.
     let booleanRaw = "not recoveryMode"
@@ -88,25 +90,28 @@ final class VHDLExpressionTests: XCTestCase {
     )
 
     /// Test that raw value is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(boolean.rawValue, booleanRaw)
-        XCTAssertEqual(conditional.rawValue, conditionalRaw)
+        #expect(boolean.rawValue == booleanRaw)
+        #expect(conditional.rawValue == conditionalRaw)
     }
 
     /// Test that `init(rawValue:)` parses the `VHDL` code correctly.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(VHDLExpression(rawValue: booleanRaw), boolean)
-        XCTAssertEqual(VHDLExpression(rawValue: conditionalRaw), conditional)
+        #expect(VHDLExpression(rawValue: booleanRaw) == boolean)
+        #expect(VHDLExpression(rawValue: conditionalRaw) == conditional)
     }
 
     /// Test invalid `VHDL` code is detected.
+    @Test
     func testInvalidRawValue() {
-        XCTAssertNil(VHDLExpression(rawValue: "nots recoveryMode"))
-        XCTAssertNil(VHDLExpression(rawValue: "not recov!eryMode"))
-        XCTAssertNil(VHDLExpression(rawValue: "recoveryMode /= '1' /= '2'"))
-        XCTAssertNil(VHDLExpression(rawValue: "recoveryMode"))
-        XCTAssertNil(VHDLExpression(rawValue: "'1'"))
-        XCTAssertNil(VHDLExpression(rawValue: ""))
+        #expect(VHDLExpression(rawValue: "nots recoveryMode") == nil)
+        #expect(VHDLExpression(rawValue: "not recov!eryMode") == nil)
+        #expect(VHDLExpression(rawValue: "recoveryMode /= '1' /= '2'") == nil)
+        #expect(VHDLExpression(rawValue: "recoveryMode") == nil)
+        #expect(VHDLExpression(rawValue: "'1'") == nil)
+        #expect(VHDLExpression(rawValue: "") == nil)
     }
 
 }

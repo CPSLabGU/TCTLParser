@@ -53,12 +53,14 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-@testable import TCTLParser
+import Testing
 import VHDLParsing
-import XCTest
+
+@testable import TCTLParser
 
 /// Test class for ``Specification``.
-final class SpecificationTests: XCTestCase {
+@Suite("Specification Tests")
+struct SpecificationTests {
 
     /// The test `rawValue`.
     let rawValue = """
@@ -99,7 +101,9 @@ final class SpecificationTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .recoveryMode))
+                                            variable: .variable(
+                                                reference: .variable(name: .recoveryMode)
+                                            )
                                         ),
                                         rhs: .literal(value: .bit(value: .high))
                                     )
@@ -117,7 +121,9 @@ final class SpecificationTests: XCTestCase {
                                 expression: .comparison(
                                     value: .equality(
                                         lhs: .reference(
-                                            variable: .variable(reference: .variable(name: .failureCount))
+                                            variable: .variable(
+                                                reference: .variable(name: .failureCount)
+                                            )
                                         ),
                                         rhs: .literal(value: .integer(value: 3))
                                     )
@@ -131,66 +137,73 @@ final class SpecificationTests: XCTestCase {
     )
 
     /// Test that the `rawValue` is generated correctly.
+    @Test
     func testRawValue() {
-        XCTAssertEqual(expected.rawValue, rawValue)
+        #expect(expected.rawValue == rawValue)
     }
 
     /// Test that the `init(rawValue:)` correctly parses the `TCTL` file with comments.
+    @Test
     func testRawValueWithCommentsInit() {
-        XCTAssertEqual(Specification(rawValue: rawValueWithComments), expected)
+        #expect(Specification(rawValue: rawValueWithComments) == expected)
     }
 
     /// Test that the `init(rawValue:)` correctly parses the `TCTL` file.
+    @Test
     func testRawValueInit() {
-        XCTAssertEqual(Specification(rawValue: rawValue), expected)
+        #expect(Specification(rawValue: rawValue) == expected)
         let configurationOnly = "// spec:language VHDL"
-        XCTAssertEqual(
-            Specification(rawValue: configurationOnly),
-            Specification(configuration: Configuration(language: .vhdl), requirements: [])
+        #expect(
+            Specification(rawValue: configurationOnly)
+                == Specification(configuration: Configuration(language: .vhdl), requirements: [])
         )
     }
 
     /// Test that the `init(rawValue:)` detects an invalid specification.
+    @Test
     func testInvalidRawValue() {
-        XCTAssertNil(
+        #expect(
             Specification(
-                rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            )
+                rawValue:
+                    "// spec:language VHDL\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
-                rawValue: "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
-            )
+                rawValue:
+                    "// spec:language VHDL\n\nA G recoveryMode = '1'\nA G failureCount = 3\n\n"
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
                 rawValue: "// spec:language VHDLA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            )
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
-                rawValue: "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            )
+                rawValue:
+                    "// spec:language undefined\n\nA G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
                 rawValue: "A G recoveryMode = '1'\n\nA G failureCount == 3\n\n"
-            )
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
                 rawValue: "// spec:language none\n\n"
-            )
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
                 rawValue: ""
-            )
+            ) == nil
         )
-        XCTAssertNil(
+        #expect(
             Specification(
                 rawValue: "//"
-            )
+            ) == nil
         )
     }
 
@@ -198,6 +211,7 @@ final class SpecificationTests: XCTestCase {
     // swiftlint:disable function_body_length
 
     /// Test spec parsing with comments and spacing.
+    @Test
     func testSpacingInSpec() {
         let raw = """
             // spec:language VHDL
@@ -259,7 +273,7 @@ final class SpecificationTests: XCTestCase {
             -- End
 
             """
-        XCTAssertNotNil(Specification(rawValue: raw))
+        #expect(Specification(rawValue: raw) != nil)
     }
 
     // swiftlint:enable function_body_length
