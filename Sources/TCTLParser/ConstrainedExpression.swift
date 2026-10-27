@@ -80,6 +80,8 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
         "{\(expression.rawValue)}_{\(constraints.map(\.rawValue).joined(separator: ", "))}"
     }
 
+    // swiftlint:disable function_body_length
+
     /// Create the constrained expression from it's `TCTL` representation.
     /// - Parameter rawValue: A string representing the `TCTL` expression definining the
     /// `ConstrainedExpression`.
@@ -141,6 +143,8 @@ public struct ConstrainedExpression: RawRepresentable, Equatable, Hashable, Coda
         }
         self.init(expression: expression, constraints: constraints)
     }
+
+    // swiftlint:enable function_body_length
 
     /// Create the constrained expression from it's stored properties.
     /// - Parameters:
